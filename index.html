@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f5f7fb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="description" content="Alpha One — Your personal AI operating system.">
 <title>Alpha One | Command Centre</title>
+
+<link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alpha%20One%20Command%20Centre%22%2C%22short_name%22%3A%22Alpha%20One%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f7fb%22%2C%22theme_color%22%3A%22%23171d2b%22%7D">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -312,6 +316,7 @@ button {cursor:pointer}
   display:flex;
   gap:8px;
   align-items:center;
+  flex-wrap:wrap;
 }
 
 .chat-history-bar {
@@ -347,6 +352,11 @@ button {cursor:pointer}
 .button.small {
   padding:8px 12px;
   font-size:11px;
+}
+
+.button.listening {
+  background:#d84d4d;
+  color:white;
 }
 
 .chat-box {
@@ -406,6 +416,21 @@ button {cursor:pointer}
   border-bottom-left-radius:3px;
 }
 
+.chat-msg-actions {
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.link-btn {
+  border:0;
+  background:transparent;
+  color:var(--blue);
+  font-size:10px;
+  font-weight:600;
+  padding:2px 0;
+}
+
 .chat-time {
   font-size:9px;color:var(--muted);
 }
@@ -435,8 +460,15 @@ button {cursor:pointer}
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
+  gap:10px;
   margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.chat-action-group {
+  display:flex;
+  gap:8px;
+  align-items:center;
 }
 
 .chat-hint {font-size:10px;color:var(--muted)}
@@ -540,7 +572,7 @@ button {cursor:pointer}
   <div class="sidebar-bottom">
     ALPHA ONE<br>
     Personal Command Centre<br>
-    Version 1.3 — Long-Term Memory
+    Version 1.4 — Voice & App Ready
   </div>
 
 </aside>
@@ -694,10 +726,13 @@ button {cursor:pointer}
       </div>
 
       <div class="chat-header-actions">
-        <button class="button secondary small" id="newChatButton">
+        <button class="button secondary small" id="autoSpeakButton" type="button">
+          Auto-Speak: Off
+        </button>
+        <button class="button secondary small" id="newChatButton" type="button">
           + New Chat
         </button>
-        <button class="button danger small" id="deleteChatButton">
+        <button class="button danger small" id="deleteChatButton" type="button">
           Delete Thread
         </button>
       </div>
@@ -728,19 +763,24 @@ button {cursor:pointer}
 
       <textarea
         id="chatInput"
-        placeholder="Message Alpha One..."
+        placeholder="Message Alpha One or tap Mic to speak..."
         maxlength="12000"
         aria-label="Message Alpha One"
       ></textarea>
 
       <div class="chat-controls">
         <span class="chat-hint">
-          Enter to send · Shift + Enter for a new line
+          Enter to send · Shift + Enter for a new line · Online required for AI & sync
         </span>
 
-        <button class="button" id="sendButton">
-          Send Message
-        </button>
+        <div class="chat-action-group">
+          <button class="button secondary" id="micButton" type="button">
+            Mic
+          </button>
+          <button class="button" id="sendButton" type="button">
+            Send Message
+          </button>
+        </div>
       </div>
 
       <div class="message" id="chatError"></div>
@@ -750,8 +790,7 @@ button {cursor:pointer}
   </div>
 
   <p class="footer-note">
-    Secure connection through Supabase Edge Functions and OpenRouter.
-    Conversations, messages, and long-term memories are saved per user in the alpha schema.
+    Tip: In your mobile browser menu, tap "Add to Home screen" or "Install app" for quick app-style launch. Live AI chat and cloud sync require internet access.
   </p>
 
 </section>
@@ -827,7 +866,7 @@ button {cursor:pointer}
         Marketplace development, vendors, products,
         payments and digital delivery.
       </p>
-      <span class="project-tag">Marketplace</span>
+      <span class="project-tag">Active Project</span>
     </div>
 
     <div class="card project-card">
@@ -836,7 +875,7 @@ button {cursor:pointer}
         Instrumental showcases, beat marketing
         and audience development.
       </p>
-      <span class="project-tag">Music Promotion</span>
+      <span class="project-tag">Active Project</span>
     </div>
 
     <div class="card project-card">
@@ -845,7 +884,7 @@ button {cursor:pointer}
         AI infrastructure, system development
         and intelligent project management.
       </p>
-      <span class="project-tag">AI Operating System</span>
+      <span class="project-tag">Active Project</span>
     </div>
 
   </div>
@@ -1199,6 +1238,9 @@ let activeConversationId = null;
 let conversationsCache = [];
 let memoriesCache = [];
 let editingMemoryId = null;
+let autoSpeakEnabled = false;
+let speechRecognition = null;
+let isListening = false;
 
 
 /* =====================================
@@ -1308,6 +1350,89 @@ function setSystemStatus(text,type) {
 
 
 /* =====================================
+   VOICE INPUT & SPEECH SYNTHESIS
+===================================== */
+
+const micButton = document.getElementById("micButton");
+const autoSpeakButton = document.getElementById("autoSpeakButton");
+
+function speakText(text) {
+  if (!("speechSynthesis" in window) || !text || !text.trim()) return;
+  try {
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/[#*`]/g, "").slice(0, 1200);
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    console.warn("Speech synthesis error:", err);
+  }
+}
+
+autoSpeakButton.addEventListener("click", () => {
+  autoSpeakEnabled = !autoSpeakEnabled;
+  autoSpeakButton.textContent = autoSpeakEnabled ? "Auto-Speak: On" : "Auto-Speak: Off";
+  if (!autoSpeakEnabled && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+});
+
+function setupVoiceInput() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    micButton.disabled = true;
+    micButton.title = "Voice input not supported in this browser";
+    return;
+  }
+
+  speechRecognition = new SpeechRec();
+  speechRecognition.lang = "en-US";
+  speechRecognition.interimResults = false;
+  speechRecognition.maxAlternatives = 1;
+
+  speechRecognition.onstart = () => {
+    isListening = true;
+    micButton.classList.add("listening");
+    micButton.textContent = "Stop";
+    hideMessage("chatError");
+  };
+
+  speechRecognition.onresult = (event) => {
+    const transcript = event.results?.[0]?.[0]?.transcript || "";
+    if (transcript) {
+      const current = chatInput.value.trim();
+      chatInput.value = current ? current + " " + transcript : transcript;
+      chatInput.focus();
+    }
+  };
+
+  speechRecognition.onerror = (event) => {
+    showMessage("chatError", "Voice input error: " + (event.error || "permission denied"), "error");
+  };
+
+  speechRecognition.onend = () => {
+    isListening = false;
+    micButton.classList.remove("listening");
+    micButton.textContent = "Mic";
+  };
+
+  micButton.addEventListener("click", () => {
+    if (!speechRecognition) return;
+    if (isListening) {
+      speechRecognition.stop();
+    } else {
+      try {
+        speechRecognition.start();
+      } catch (err) {
+        showMessage("chatError", "Could not start microphone: " + err.message, "error");
+      }
+    }
+  });
+}
+
+
+/* =====================================
    SUPABASE INITIALIZATION
 ===================================== */
 
@@ -1371,7 +1496,7 @@ function updateAccountDisplay(session) {
     setSystemStatus("Account connected","online");
 
     document.getElementById("chatConnectionStatus").textContent =
-      "Ready · Persistent threads & memory enabled";
+      "Ready · Voice & persistent threads enabled";
 
   } else {
 
@@ -2065,7 +2190,8 @@ async function loadConversationMessages(conversationId) {
         addChatMessage(
           msg.role,
           msg.content || "",
-          formatMessageTime(msg.created_at)
+          formatMessageTime(msg.created_at),
+          false
         );
         if (msg.role === "assistant" && msg.model) {
           lastModel = msg.model;
@@ -2190,7 +2316,7 @@ function removeChatPlaceholder() {
   if (placeholder) placeholder.remove();
 }
 
-function addChatMessage(role,message,timeLabel = null) {
+function addChatMessage(role,message,timeLabel = null,allowSpeak = true) {
 
   removeChatPlaceholder();
 
@@ -2210,6 +2336,9 @@ function addChatMessage(role,message,timeLabel = null) {
   // Use textContent to prevent HTML/script injection.
   bubble.textContent = message;
 
+  const actions = document.createElement("div");
+  actions.className = "chat-msg-actions";
+
   const time = document.createElement("div");
 
   time.className = "chat-time";
@@ -2219,9 +2348,20 @@ function addChatMessage(role,message,timeLabel = null) {
     minute:"2-digit"
   });
 
+  actions.appendChild(time);
+
+  if (role === "assistant" && allowSpeak && ("speechSynthesis" in window)) {
+    const speakBtn = document.createElement("button");
+    speakBtn.type = "button";
+    speakBtn.className = "link-btn";
+    speakBtn.textContent = "Speak";
+    speakBtn.addEventListener("click", () => speakText(message));
+    actions.appendChild(speakBtn);
+  }
+
   wrapper.appendChild(label);
   wrapper.appendChild(bubble);
-  wrapper.appendChild(time);
+  wrapper.appendChild(actions);
 
   chatBox.appendChild(wrapper);
 
@@ -2261,11 +2401,24 @@ async function sendChatMessage() {
 
   if (isSending) return;
 
+  if (isListening && speechRecognition) {
+    speechRecognition.stop();
+  }
+
   const message = chatInput.value.trim();
 
   if (!message) return;
 
   hideMessage("chatError");
+
+  if (!navigator.onLine) {
+    showMessage(
+      "chatError",
+      "You are currently offline. Reconnect to the internet to send messages to Alpha One.",
+      "error"
+    );
+    return;
+  }
 
   if (!alphaClient) {
 
@@ -2320,7 +2473,7 @@ async function sendChatMessage() {
   sendButton.disabled = true;
   sendButton.textContent = "Thinking...";
 
-  addChatMessage("user",originalMessage);
+  addChatMessage("user",originalMessage,null,false);
   addTypingIndicator();
 
   document.getElementById("chatConnectionStatus").textContent =
@@ -2392,7 +2545,11 @@ async function sendChatMessage() {
       );
     }
 
-    addChatMessage("assistant",data.reply);
+    addChatMessage("assistant",data.reply,null,true);
+
+    if (autoSpeakEnabled) {
+      speakText(data.reply);
+    }
 
     if (data.conversationId) {
       activeConversationId = data.conversationId;
@@ -2429,7 +2586,9 @@ async function sendChatMessage() {
 
     addChatMessage(
       "assistant",
-      "I couldn't complete that request. " + error.message
+      "I couldn't complete that request. " + error.message,
+      null,
+      false
     );
 
     document.getElementById("chatConnectionStatus").textContent =
@@ -2479,6 +2638,16 @@ chatInput.addEventListener("keydown",function(event) {
 ===================================== */
 
 async function startAlphaOne() {
+
+  setupVoiceInput();
+
+  window.addEventListener("offline", () => {
+    setSystemStatus("Offline — local view only","error");
+  });
+
+  window.addEventListener("online", () => {
+    setSystemStatus(currentSession ? "Account connected" : "Interface online","online");
+  });
 
   const initialized = initializeSupabase();
 
