@@ -242,6 +242,7 @@ button {cursor:pointer}
   justify-content:space-between;
   align-items:center;
   gap:10px;
+  flex-wrap:wrap;
 }
 
 .chat-header h3 {margin:0}
@@ -249,6 +250,47 @@ button {cursor:pointer}
 .chat-header small {
   display:block;color:var(--muted);
   font-size:11px;margin-top:5px;
+}
+
+.chat-header-actions {
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.chat-history-bar {
+  padding:12px 21px;
+  background:#f7f9fd;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.chat-history-bar label {
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.chat-select {
+  flex:1;
+  min-width:180px;
+  padding:8px 11px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:white;
+  font-size:12px;
+  color:var(--text);
+  outline:none;
+}
+
+.chat-select:focus {border-color:var(--blue)}
+
+.button.small {
+  padding:8px 12px;
+  font-size:11px;
 }
 
 .chat-box {
@@ -376,6 +418,7 @@ button {cursor:pointer}
   .chat-box {height:55vh;min-height:300px}
   .chat-message {max-width:94%}
   .chat-header {padding:15px}
+  .chat-history-bar {padding:10px 15px}
 }
 
 @media(max-width:420px) {
@@ -441,7 +484,7 @@ button {cursor:pointer}
   <div class="sidebar-bottom">
     ALPHA ONE<br>
     Personal Command Centre<br>
-    Version 1.1 — AI Connection
+    Version 1.2 — Persistent Chat
   </div>
 
 </aside>
@@ -594,17 +637,29 @@ button {cursor:pointer}
         <small id="chatConnectionStatus">Waiting for connection test</small>
       </div>
 
-      <button class="button secondary" id="clearChatButton">
-        Clear Chat
-      </button>
+      <div class="chat-header-actions">
+        <button class="button secondary small" id="newChatButton">
+          + New Chat
+        </button>
+        <button class="button danger small" id="deleteChatButton">
+          Delete Thread
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-history-bar">
+      <label for="conversationSelect">Thread:</label>
+      <select class="chat-select" id="conversationSelect" aria-label="Saved conversations">
+        <option value="">New conversation (unsaved until first message)</option>
+      </select>
     </div>
 
     <div class="chat-box" id="chatBox" aria-live="polite">
 
       <div class="chat-placeholder" id="chatPlaceholder">
         <strong>ALPHA ONE</strong><br><br>
-        Your intelligence system is ready for its first test.<br>
-        Sign in to your account and send a message below.
+        Your intelligence system is ready.<br>
+        Sign in to load saved conversations or start a new chat.
       </div>
 
     </div>
@@ -640,7 +695,7 @@ button {cursor:pointer}
 
   <p class="footer-note">
     Secure connection through Supabase Edge Functions and OpenRouter.
-    Conversations are currently temporary and are not saved to the database.
+    Conversations and messages are saved per user in the alpha database schema.
   </p>
 
 </section>
@@ -1044,6 +1099,8 @@ const AI_FUNCTION_NAME = "alpha-chat";
 let alphaClient = null;
 let currentSession = null;
 let isSending = false;
+let activeConversationId = null;
+let conversationsCache = [];
 
 
 /* =====================================
@@ -1088,6 +1145,10 @@ function showPage(pageName) {
   document.getElementById("sidebar").classList.remove("open");
 
   window.scrollTo(0,0);
+
+  if (pageName === "assistant" && currentSession) {
+    loadConversationsList(activeConversationId);
+  }
 }
 
 navButtons.forEach(button => {
@@ -1207,7 +1268,17 @@ function updateAccountDisplay(session) {
 
     setSystemStatus("Account connected","online");
 
+    document.getElementById("chatConnectionStatus").textContent =
+      "Ready · Persistent threads enabled";
+
   } else {
+
+    activeConversationId = null;
+    conversationsCache = [];
+    renderConversationOptions();
+    renderEmptyChatState(
+      "Your intelligence system is ready.<br>Sign in through Settings to save and load conversations."
+    );
 
     accountBox.textContent = "You are currently signed out.";
 
@@ -1276,6 +1347,7 @@ document.getElementById("authForm").addEventListener(
       );
 
       await testDatabaseConnection();
+      await loadConversationsList();
 
     } catch (error) {
 
@@ -1350,6 +1422,7 @@ document.getElementById("registerButton").addEventListener(
         );
 
         await testDatabaseConnection();
+        await loadConversationsList();
 
       } else {
 
@@ -1487,6 +1560,265 @@ document.getElementById("testDatabaseButton").addEventListener(
 
 
 /* =====================================
+   PERSISTENT CONVERSATIONS & HISTORY
+===================================== */
+
+const conversationSelect = document.getElementById("conversationSelect");
+const newChatButton = document.getElementById("newChatButton");
+const deleteChatButton = document.getElementById("deleteChatButton");
+
+function renderConversationOptions() {
+
+  conversationSelect.innerHTML = "";
+
+  const draftOption = document.createElement("option");
+  draftOption.value = "";
+  draftOption.textContent = currentSession
+    ? "New conversation (saved on first message)"
+    : "Sign in to load threads";
+  conversationSelect.appendChild(draftOption);
+
+  conversationsCache.forEach(conv => {
+    const opt = document.createElement("option");
+    opt.value = conv.id;
+    opt.textContent = conv.title || "New conversation";
+    conversationSelect.appendChild(opt);
+  });
+
+  conversationSelect.value = activeConversationId || "";
+  deleteChatButton.disabled = !activeConversationId || !currentSession || isSending;
+}
+
+function renderEmptyChatState(subtext) {
+
+  chatBox.innerHTML = `
+    <div class="chat-placeholder" id="chatPlaceholder">
+      <strong>ALPHA ONE</strong><br><br>
+      ${subtext}
+    </div>
+  `;
+}
+
+function formatMessageTime(isoString) {
+
+  if (!isoString) {
+    return new Date().toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }
+
+  const parsed = new Date(isoString);
+  if (Number.isNaN(parsed.getTime())) {
+    return new Date().toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }
+
+  return parsed.toLocaleTimeString([],{
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+async function loadConversationsList(preferredId = null) {
+
+  if (!alphaClient || !currentSession || !currentSession.user) {
+    conversationsCache = [];
+    activeConversationId = null;
+    renderConversationOptions();
+    return;
+  }
+
+  try {
+
+    const {data,error} = await alphaClient
+      .schema("alpha")
+      .from("alpha_conversations")
+      .select("id, title, updated_at, created_at")
+      .eq("user_id", currentSession.user.id)
+      .order("updated_at", { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    conversationsCache = Array.isArray(data) ? data : [];
+
+    const targetId =
+      preferredId ||
+      activeConversationId ||
+      (conversationsCache[0] ? conversationsCache[0].id : null);
+
+    const exists = conversationsCache.some(c => c.id === targetId);
+    activeConversationId = exists ? targetId : null;
+
+    renderConversationOptions();
+
+    if (activeConversationId) {
+      await loadConversationMessages(activeConversationId);
+    } else {
+      renderEmptyChatState(
+        "Start a new thread below. Your messages and replies will be saved automatically."
+      );
+    }
+
+  } catch (error) {
+
+    console.error("Load conversations error:",error);
+    showMessage(
+      "chatError",
+      "Could not load saved conversations: " + error.message,
+      "error"
+    );
+  }
+}
+
+async function loadConversationMessages(conversationId) {
+
+  if (!alphaClient || !currentSession || !conversationId) return;
+
+  hideMessage("chatError");
+  renderEmptyChatState("Loading conversation history...");
+
+  try {
+
+    const {data,error} = await alphaClient
+      .schema("alpha")
+      .from("alpha_messages")
+      .select("role, content, model, created_at")
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    const rows = Array.isArray(data) ? data : [];
+
+    if (rows.length === 0) {
+      renderEmptyChatState("No messages in this thread yet. Send a message to begin.");
+      return;
+    }
+
+    chatBox.innerHTML = "";
+
+    let lastModel = null;
+
+    rows.forEach(msg => {
+      if (msg.role === "user" || msg.role === "assistant") {
+        addChatMessage(
+          msg.role,
+          msg.content || "",
+          formatMessageTime(msg.created_at)
+        );
+        if (msg.role === "assistant" && msg.model) {
+          lastModel = msg.model;
+        }
+      }
+    });
+
+    if (lastModel) {
+      document.getElementById("chatModel").textContent =
+        "AI model: " + lastModel;
+    }
+
+  } catch (error) {
+
+    console.error("Load messages error:",error);
+    renderEmptyChatState("Could not load messages for this conversation.");
+    showMessage(
+      "chatError",
+      "History load failed: " + error.message,
+      "error"
+    );
+  }
+}
+
+conversationSelect.addEventListener("change", async function() {
+
+  if (isSending) return;
+
+  const selectedId = conversationSelect.value || null;
+  activeConversationId = selectedId;
+  renderConversationOptions();
+
+  if (activeConversationId) {
+    await loadConversationMessages(activeConversationId);
+  } else {
+    document.getElementById("chatModel").textContent =
+      "AI model: Not yet tested";
+    renderEmptyChatState(
+      "New conversation started. Send a message to save it."
+    );
+  }
+});
+
+newChatButton.addEventListener("click", function() {
+
+  if (isSending) return;
+
+  activeConversationId = null;
+  renderConversationOptions();
+  hideMessage("chatError");
+
+  document.getElementById("chatModel").textContent =
+    "AI model: Not yet tested";
+
+  renderEmptyChatState(
+    currentSession
+      ? "New conversation started. Send a message to save it."
+      : "Sign in through Settings to start a persistent conversation."
+  );
+
+  chatInput.focus();
+});
+
+deleteChatButton.addEventListener("click", async function() {
+
+  if (isSending || !activeConversationId || !currentSession || !alphaClient) {
+    return;
+  }
+
+  const targetId = activeConversationId;
+  deleteChatButton.disabled = true;
+  hideMessage("chatError");
+
+  try {
+
+    const {error} = await alphaClient
+      .schema("alpha")
+      .from("alpha_conversations")
+      .delete()
+      .eq("id", targetId)
+      .eq("user_id", currentSession.user.id);
+
+    if (error) throw error;
+
+    activeConversationId = null;
+    await loadConversationsList(null);
+
+    showMessage(
+      "chatError",
+      "Conversation deleted.",
+      "info"
+    );
+
+  } catch (error) {
+
+    console.error("Delete conversation error:",error);
+    showMessage(
+      "chatError",
+      "Could not delete conversation: " + error.message,
+      "error"
+    );
+
+  } finally {
+
+    renderConversationOptions();
+  }
+});
+
+
+/* =====================================
    AI CHAT DISPLAY
 ===================================== */
 
@@ -1501,7 +1833,7 @@ function removeChatPlaceholder() {
   if (placeholder) placeholder.remove();
 }
 
-function addChatMessage(role,message) {
+function addChatMessage(role,message,timeLabel = null) {
 
   removeChatPlaceholder();
 
@@ -1525,7 +1857,7 @@ function addChatMessage(role,message) {
 
   time.className = "chat-time";
 
-  time.textContent = new Date().toLocaleTimeString([],{
+  time.textContent = timeLabel || new Date().toLocaleTimeString([],{
     hour:"2-digit",
     minute:"2-digit"
   });
@@ -1589,7 +1921,6 @@ async function sendChatMessage() {
     return;
   }
 
-  // Retrieve the current authenticated session.
   let sessionData;
 
   try {
@@ -1623,6 +1954,7 @@ async function sendChatMessage() {
   }
 
   isSending = true;
+  renderConversationOptions();
 
   const originalMessage = message;
 
@@ -1639,17 +1971,18 @@ async function sendChatMessage() {
 
   try {
 
-    /*
-      Supabase functions.invoke automatically attaches
-      the authenticated user's session token and API key.
-    */
+    const payload = {
+      message: originalMessage
+    };
+
+    if (activeConversationId) {
+      payload.conversationId = activeConversationId;
+    }
 
     const {data,error} = await alphaClient.functions.invoke(
       AI_FUNCTION_NAME,
       {
-        body:{
-          message:originalMessage
-        }
+        body: payload
       }
     );
 
@@ -1661,7 +1994,6 @@ async function sendChatMessage() {
 
       let details = error.message || "The AI request failed.";
 
-      // Try to retrieve the response body from a Functions error.
       if (error.context && typeof error.context.clone === "function") {
 
         try {
@@ -1705,13 +2037,19 @@ async function sendChatMessage() {
 
     addChatMessage("assistant",data.reply);
 
+    if (data.conversationId) {
+      activeConversationId = data.conversationId;
+    }
+
+    await loadConversationsList(activeConversationId);
+
     const modelName = data.model || "OpenRouter model";
 
     document.getElementById("chatModel").textContent =
       "AI model: " + modelName;
 
     document.getElementById("chatConnectionStatus").textContent =
-      "AI connection active";
+      "AI connection active · Saved";
 
     setBadge("aiBadge","Connected",true);
     setBadge("openRouterBadge","Connected",true);
@@ -1748,6 +2086,7 @@ async function sendChatMessage() {
     chatInput.disabled = false;
     sendButton.disabled = false;
     sendButton.textContent = "Send Message";
+    renderConversationOptions();
 
     chatInput.focus();
 
@@ -1773,33 +2112,6 @@ chatInput.addEventListener("keydown",function(event) {
 
 
 /* =====================================
-   CLEAR CHAT
-===================================== */
-
-document.getElementById("clearChatButton").addEventListener(
-  "click",
-  function() {
-
-    if (isSending) return;
-
-    chatBox.innerHTML = `
-      <div class="chat-placeholder" id="chatPlaceholder">
-        <strong>ALPHA ONE</strong><br><br>
-        Conversation cleared.<br>
-        What would you like to work on?
-      </div>
-    `;
-
-    document.getElementById("chatModel").textContent =
-      "AI model: Not yet tested";
-
-    hideMessage("chatError");
-
-  }
-);
-
-
-/* =====================================
    STARTUP
 ===================================== */
 
@@ -1808,6 +2120,8 @@ async function startAlphaOne() {
   const initialized = initializeSupabase();
 
   if (!initialized) return;
+
+  renderConversationOptions();
 
   try {
 
@@ -1819,13 +2133,17 @@ async function startAlphaOne() {
 
     if (data.session) {
       await testDatabaseConnection();
+      await loadConversationsList();
     }
 
     alphaClient.auth.onAuthStateChange(
-      (event,session) => {
+      async (event,session) => {
 
         updateAccountDisplay(session);
 
+        if (session) {
+          await loadConversationsList();
+        }
       }
     );
 
