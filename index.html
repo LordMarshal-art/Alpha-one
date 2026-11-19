@@ -1,738 +1,310 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#ffffff">
-<title>Alpha One | Intelligence System</title>
-
-<style>
-:root {
-  --bg: #f7f8fa;
-  --white: #ffffff;
-  --black: #111318;
-  --blue: #3769ed;
-  --muted: #858b98;
-  --border: #e8eaf0;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Inter, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--black);
-}
-
-.app {
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  width: 250px;
-  background: white;
-  border-right: 1px solid var(--border);
-  padding: 25px 18px;
-  display: flex;
-  flex-direction: column;
-}
-
-.logo {
-  font-size: 23px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  margin-bottom: 8px;
-}
-
-.logo span {
-  color: var(--blue);
-}
-
-.tagline {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  margin-bottom: 40px;
-}
-
-.nav-title {
-  font-size: 10px;
-  color: var(--muted);
-  margin: 25px 10px 12px;
-  letter-spacing: 1.5px;
-}
-
-.nav-item {
-  padding: 12px;
-  margin-bottom: 5px;
-  border-radius: 9px;
-  cursor: pointer;
-  color: #626977;
-  font-size: 13px;
-  transition: .2s;
-}
-
-.nav-item:hover,
-.nav-item.active {
-  background: #edf2ff;
-  color: var(--blue);
-}
-
-.sidebar-bottom {
-  margin-top: auto;
-}
-
-.profile {
-  border-top: 1px solid var(--border);
-  padding-top: 18px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.profile small {
-  display: block;
-  color: var(--muted);
-  font-weight: 400;
-  margin-top: 5px;
-}
-
-.main {
-  flex: 1;
-  min-width: 0;
-}
-
-.topbar {
-  height: 75px;
-  background: white;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 35px;
-}
-
-.status {
-  font-size: 12px;
-  color: #159b68;
-}
-
-.status::before {
-  content: "";
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  background: #19b77a;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.top-right {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.content {
-  max-width: 1200px;
-  margin: auto;
-  padding: 40px 35px;
-}
-
-.page {
-  display: none;
-}
-
-.page.active {
-  display: block;
-}
-
-.greeting {
-  margin-bottom: 35px;
-}
-
-.greeting h1 {
-  font-size: 32px;
-  letter-spacing: -1px;
-  margin-bottom: 10px;
-}
-
-.greeting p {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 35px;
-}
-
-.card {
-  background: white;
-  padding: 23px;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-}
-
-.card-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 18px;
-}
-
-.card-value {
-  font-size: 25px;
-  font-weight: 750;
-}
-
-.card-note {
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 8px;
-}
-
-.section {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 25px;
-  margin-bottom: 22px;
-}
-
-.section h2 {
-  font-size: 17px;
-  margin-bottom: 10px;
-}
-
-.section p {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 12px 17px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.primary {
-  background: var(--blue);
-  color: white;
-}
-
-.secondary {
-  background: #edf2ff;
-  color: var(--blue);
-}
-
-.chat-box {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 20px;
-  margin-top: 25px;
-}
-
-.chat-messages {
-  min-height: 230px;
-  max-height: 420px;
-  overflow-y: auto;
-  padding: 10px 0;
-}
-
-.message {
-  padding: 13px;
-  border-radius: 9px;
-  margin-bottom: 12px;
-  font-size: 13px;
-  line-height: 1.6;
-  max-width: 85%;
-  white-space: pre-wrap;
-}
-
-.message.ai {
-  background: #f1f3f7;
-}
-
-.message.user {
-  background: #eaf0ff;
-  margin-left: auto;
-}
-
-.chat-input {
-  display: flex;
-  gap: 10px;
-  border-top: 1px solid var(--border);
-  padding-top: 17px;
-}
-
-.chat-input input {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--border);
-  padding: 13px;
-  border-radius: 8px;
-  outline: none;
-}
-
-.chat-input input:focus {
-  border-color: var(--blue);
-}
-
-.list-item {
-  padding: 17px 0;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-}
-
-.badge {
-  background: #edf2ff;
-  color: var(--blue);
-  padding: 6px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-}
-
-select {
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: white;
-  width: 100%;
-  margin: 12px 0;
-}
-
-.mobile-menu {
-  display: none;
-  background: none;
-  font-size: 22px;
-  padding: 5px;
-}
-
-@media(max-width:800px) {
-  .sidebar {
-    position: fixed;
-    z-index: 10;
-    left: -260px;
-    top: 0;
-    bottom: 0;
-    transition: .25s;
-  }
-
-  .sidebar.open {
-    left: 0;
-  }
-
-  .mobile-menu {
-    display: block;
-  }
-
-  .topbar {
-    padding: 0 15px;
-  }
-
-  .content {
-    padding: 28px 16px;
-  }
-
-  .cards {
-    grid-template-columns: 1fr;
-  }
-
-  .greeting h1 {
-    font-size: 26px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<aside class="sidebar" id="sidebar">
-
-<div class="logo">ALPHA<span> ONE</span></div>
-<div class="tagline">INTELLIGENCE SYSTEM</div>
-
-<div class="nav-title">WORKSPACE</div>
-
-<div class="nav-item active" onclick="navigate('home',this)">◈ &nbsp; Overview</div>
-<div class="nav-item" onclick="navigate('chat',this)">◉ &nbsp; AI Assistant</div>
-<div class="nav-item" onclick="navigate('agents',this)">◇ &nbsp; AI Agents</div>
-<div class="nav-item" onclick="navigate('projects',this)">▣ &nbsp; Projects</div>
-
-<div class="nav-title">INTELLIGENCE</div>
-
-<div class="nav-item" onclick="navigate('memory',this)">◫ &nbsp; Memory</div>
-<div class="nav-item" onclick="navigate('developer',this)">⌘ &nbsp; Developer</div>
-<div class="nav-item" onclick="navigate('automations',this)">↗ &nbsp; Automations</div>
-
-<div class="nav-title">SYSTEM</div>
-
-<div class="nav-item" onclick="navigate('integrations',this)">◎ &nbsp; Integrations</div>
-<div class="nav-item" onclick="navigate('settings',this)">⚙ &nbsp; Settings</div>
-
-<div class="sidebar-bottom">
-<div class="profile">
-LordMarshal
-<small>Administrator</small>
-</div>
-</div>
-
-</aside>
-
-<main class="main">
-
-<header class="topbar">
-<button class="mobile-menu" onclick="toggleMenu()">☰</button>
-<div class="status">System interface online</div>
-<div class="top-right">ALPHA CORE / v0.1</div>
-</header>
-
-<div class="content">
-
-<!-- HOME -->
-
-<section class="page active" id="home">
-
-<div class="greeting">
-<h1>Welcome to Alpha One.</h1>
-<p>Your intelligence workspace. One system. Multiple capabilities.</p>
-</div>
-
-<div class="cards">
-
-<div class="card">
-<div class="card-label">AI PERSONALITIES</div>
-<div class="card-value">02</div>
-<div class="card-note">Default and Code Architect planned</div>
-</div>
-
-<div class="card">
-<div class="card-label">ACTIVE AGENTS</div>
-<div class="card-value">00</div>
-<div class="card-note">No agents connected yet</div>
-</div>
-
-<div class="card">
-<div class="card-label">CONNECTED MODELS</div>
-<div class="card-value">00</div>
-<div class="card-note">AI provider integration pending</div>
-</div>
-
-</div>
-
-<div class="section">
-<h2>Alpha Core</h2>
-<p>Your central intelligence system is ready for its next development stage. Connect an AI provider to activate real intelligence and conversations.</p>
-
-<div class="actions">
-<button class="primary" onclick="navigate('chat')">Open AI Assistant</button>
-<button class="secondary" onclick="navigate('agents')">Explore Agents</button>
-</div>
-</div>
-
-<div class="section">
-<h2>System Architecture</h2>
-<div class="list-item">Alpha Core <span class="badge">Interface ready</span></div>
-<div class="list-item">AI Memory <span class="badge">Pending</span></div>
-<div class="list-item">Agent Network <span class="badge">Pending</span></div>
-<div class="list-item">External Integrations <span class="badge">Pending</span></div>
-</div>
-
-</section>
-
-<!-- CHAT -->
-
-<section class="page" id="chat">
-
-<div class="greeting">
-<h1>AI Assistant</h1>
-<p>Your central conversation interface.</p>
-</div>
-
-<div class="section">
-<h2>Choose personality</h2>
-<select id="personality">
-<option>Alpha Default</option>
-<option>Code Architect</option>
-</select>
-
-<h2>Choose AI model</h2>
-<select id="model">
-<option>Automatic selection (coming soon)</option>
-<option>OpenRouter (coming soon)</option>
-<option>Google Gemini (coming soon)</option>
-</select>
-</div>
-
-<div class="chat-box">
-<div class="chat-messages" id="messages">
-<div class="message ai">
-Welcome to Alpha One.
-
-I am your central AI interface. My intelligence engine has not yet been connected.
-
-Once configured, I will be able to assist with research, planning, development and business operations.
-</div>
-</div>
-
-<div class="chat-input">
-<input id="chatInput" placeholder="Message Alpha One..." onkeydown="if(event.key==='Enter')sendMessage()">
-<button class="primary" onclick="sendMessage()">Send</button>
-</div>
-</div>
-
-</section>
-
-<!-- AGENTS -->
-
-<section class="page" id="agents">
-
-<div class="greeting">
-<h1>Agent Network</h1>
-<p>Manage specialised AI workers.</p>
-</div>
-
-<div class="section">
-<h2>Available agents</h2>
-
-<div class="list-item">
-Alpha Default
-<span class="badge">Planned</span>
-</div>
-
-<div class="list-item">
-Code Architect
-<span class="badge">Planned</span>
-</div>
-
-<div class="list-item">
-Research Agent
-<span class="badge">Planned</span>
-</div>
-
-<div class="list-item">
-Business Manager
-<span class="badge">Planned</span>
-</div>
-
-<div class="list-item">
-Career Manager
-<span class="badge">Planned</span>
-</div>
-
-</div>
-
-</section>
-
-<!-- PROJECTS -->
-
-<section class="page" id="projects">
-
-<div class="greeting">
-<h1>Projects</h1>
-<p>Manage your connected businesses and initiatives.</p>
-</div>
-
-<div class="section">
-
-<div class="list-item">
-485 MUSIC
-<span class="badge">Marketplace</span>
-</div>
-
-<div class="list-item">
-FutureDecoded
-<span class="badge">Beat Promotion</span>
-</div>
-
-<div class="list-item">
-Alpha One
-<span class="badge">Core System</span>
-</div>
-
-<p style="margin-top:20px">Project management integrations will be developed in a later stage.</p>
-
-</div>
-
-</section>
-
-<!-- MEMORY -->
-
-<section class="page" id="memory">
-
-<div class="greeting">
-<h1>Alpha Memory</h1>
-<p>Persistent knowledge and information management.</p>
-</div>
-
-<div class="section">
-<h2>Memory infrastructure</h2>
-<p>Alpha One will eventually retain approved information, project history, user preferences and important decisions.</p>
-<div class="badge" style="display:inline-block;margin-top:15px">Database integration pending</div>
-</div>
-
-</section>
-
-<!-- DEVELOPER -->
-
-<section class="page" id="developer">
-
-<div class="greeting">
-<h1>Developer Workspace</h1>
-<p>Technical intelligence and software development.</p>
-</div>
-
-<div class="section">
-<h2>Code Architect</h2>
-<p>A specialised development personality for writing code, debugging applications, reviewing repositories and designing software systems.</p>
-<div class="badge" style="display:inline-block;margin-top:15px">AI connection pending</div>
-</div>
-
-</section>
-
-<!-- AUTOMATIONS -->
-
-<section class="page" id="automations">
-
-<div class="greeting">
-<h1>Automations</h1>
-<p>Manage workflows and delegated tasks.</p>
-</div>
-
-<div class="section">
-<h2>Workflow engine</h2>
-<p>Automated workflows will be introduced with permission controls, execution logs and approval requirements.</p>
-</div>
-
-</section>
-
-<!-- INTEGRATIONS -->
-
-<section class="page" id="integrations">
-
-<div class="greeting">
-<h1>Integrations</h1>
-<p>Connect Alpha One to external services.</p>
-</div>
-
-<div class="section">
-<div class="list-item">OpenRouter <span class="badge">Pending</span></div>
-<div class="list-item">Supabase <span class="badge">Pending</span></div>
-<div class="list-item">GitHub <span class="badge">Pending</span></div>
-<div class="list-item">Google Services <span class="badge">Pending</span></div>
-</div>
-
-</section>
-
-<!-- SETTINGS -->
-
-<section class="page" id="settings">
-
-<div class="greeting">
-<h1>System Settings</h1>
-<p>Configure your Alpha One environment.</p>
-</div>
-
-<div class="section">
-<h2>System information</h2>
-<div class="list-item">Application <span>Alpha One</span></div>
-<div class="list-item">Version <span>0.1.0</span></div>
-<div class="list-item">Administrator <span>LordMarshal</span></div>
-<div class="list-item">Interface <span>Responsive Web</span></div>
-</div>
-
-</section>
-
-</div>
-</main>
-</div>
-
 <script>
+/* ==========================================
+   ALPHA ONE — SUPABASE CONNECTION
+========================================== */
+
+const SUPABASE_URL = 'https://jrupwyaggntgsulpaqyq.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+  'sb_publishable_JoplUxXVcfBfb2dDltRyaQ_qk6b01jy';
+
+const alphaClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    db: {
+      schema: 'alpha'
+    },
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+
+/* ==========================================
+   NAVIGATION
+========================================== */
 
 function navigate(page, element) {
 
-document.querySelectorAll('.page').forEach(p => {
-p.classList.remove('active');
-});
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+  });
 
-document.querySelectorAll('.nav-item').forEach(n => {
-n.classList.remove('active');
-});
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+  });
 
-const target = document.getElementById(page);
+  const target = document.getElementById(page);
 
-if(target) target.classList.add('active');
+  if (target) target.classList.add('active');
 
-if(element) {
-element.classList.add('active');
-} else {
-document.querySelectorAll('.nav-item').forEach(n => {
-if(n.getAttribute('onclick')?.includes("'" + page + "'")) {
-n.classList.add('active');
+  if (element) {
+    element.classList.add('active');
+  } else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick')?.includes("'" + page + "'")) {
+        n.classList.add('active');
+      }
+    });
+  }
+
+  document.getElementById('sidebar').classList.remove('open');
 }
-});
-}
 
-document.getElementById('sidebar').classList.remove('open');
-
-}
 
 function toggleMenu() {
-document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar').classList.toggle('open');
 }
+
+
+/* ==========================================
+   SYSTEM STATUS
+========================================== */
+
+function updateStatus(message, color) {
+
+  const status = document.querySelector('.status');
+
+  status.textContent = message;
+  status.style.color = color;
+
+  status.style.setProperty('--status-color', color);
+}
+
+
+/* ==========================================
+   AUTHENTICATION
+========================================== */
+
+async function signUp() {
+
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  const message = document.getElementById('authMessage');
+
+  if (!email || !password) {
+    message.textContent = 'Enter your email and password.';
+    return;
+  }
+
+  if (password.length < 6) {
+    message.textContent = 'Password must contain at least 6 characters.';
+    return;
+  }
+
+  message.textContent = 'Creating your Alpha One account...';
+
+  try {
+
+    const { data, error } = await alphaClient.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      message.textContent = 'Account created. You are now signed in.';
+    } else {
+      message.textContent =
+        'Account created. Check your email for a verification link before signing in.';
+    }
+
+  } catch (error) {
+
+    message.textContent = 'Registration failed: ' + error.message;
+
+  }
+}
+
+
+async function signIn() {
+
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  const message = document.getElementById('authMessage');
+
+  if (!email || !password) {
+    message.textContent = 'Enter your email and password.';
+    return;
+  }
+
+  message.textContent = 'Signing in...';
+
+  try {
+
+    const { data, error } = await alphaClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    message.textContent = 'Welcome. You are signed in to Alpha One.';
+
+    await checkAlphaAccess();
+
+  } catch (error) {
+
+    message.textContent = 'Sign-in failed: ' + error.message;
+
+  }
+}
+
+
+async function signOut() {
+
+  const message = document.getElementById('authMessage');
+
+  const { error } = await alphaClient.auth.signOut();
+
+  if (error) {
+    message.textContent = 'Sign-out failed: ' + error.message;
+    return;
+  }
+
+  message.textContent = 'You have signed out.';
+
+  updateStatus('Authentication required', '#b7791f');
+
+}
+
+
+/* ==========================================
+   VERIFY ALPHA DATABASE ACCESS
+========================================== */
+
+async function checkAlphaAccess() {
+
+  const message = document.getElementById('authMessage');
+
+  try {
+
+    const { data: sessionData, error: sessionError } =
+      await alphaClient.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    const session = sessionData.session;
+
+    if (!session) {
+
+      updateStatus('Authentication required', '#b7791f');
+
+      message.textContent =
+        'Sign in to access your private Alpha One workspace.';
+
+      return;
+    }
+
+    updateStatus('Checking Alpha database...', '#3769ed');
+
+    const { error } = await alphaClient
+      .from('alpha_settings')
+      .select('id')
+      .limit(1);
+
+    if (error) throw error;
+
+    updateStatus('Alpha database connected', '#159b68');
+
+    message.textContent =
+      'Authenticated as ' + session.user.email +
+      '. Alpha database access verified.';
+
+    console.log('Alpha One database connection successful.');
+
+  } catch (error) {
+
+    updateStatus('Database connection error', '#d64545');
+
+    message.textContent =
+      'Database access error: ' + error.message;
+
+    console.error('Alpha One:', error);
+
+  }
+}
+
+
+/* ==========================================
+   AUTHENTICATION STATE LISTENER
+========================================== */
+
+alphaClient.auth.onAuthStateChange((event, session) => {
+
+  if (session) {
+
+    updateStatus('Authenticated', '#159b68');
+
+    document.getElementById('authMessage').textContent =
+      'Signed in as ' + session.user.email;
+
+  } else {
+
+    updateStatus('Authentication required', '#b7791f');
+
+  }
+
+});
+
+
+/* ==========================================
+   CHAT INTERFACE
+========================================== */
 
 function sendMessage() {
 
-const input = document.getElementById('chatInput');
-const messages = document.getElementById('messages');
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('messages');
 
-const value = input.value.trim();
+  const value = input.value.trim();
 
-if(!value) return;
+  if (!value) return;
 
-const userMessage = document.createElement('div');
-userMessage.className = 'message user';
-userMessage.textContent = value;
+  const userMessage = document.createElement('div');
 
-messages.appendChild(userMessage);
+  userMessage.className = 'message user';
+  userMessage.textContent = value;
 
-const response = document.createElement('div');
-response.className = 'message ai';
+  messages.appendChild(userMessage);
 
-response.textContent =
-'Your message has been received by the Alpha One interface. The AI intelligence engine is not connected yet. OpenRouter integration will activate real AI conversations in the next development stage.';
+  const response = document.createElement('div');
 
-messages.appendChild(response);
+  response.className = 'message ai';
 
-input.value = '';
+  response.textContent =
+    'Your message has been received. Alpha One is connected to its authentication and database infrastructure. The AI intelligence engine is not yet connected.';
 
-messages.scrollTop = messages.scrollHeight;
+  messages.appendChild(response);
+
+  input.value = '';
+
+  messages.scrollTop = messages.scrollHeight;
 
 }
 
-</script>
 
-</body>
-</html>
+/* ==========================================
+   INITIALISE ALPHA ONE
+========================================== */
+
+async function initialiseAlphaOne() {
+
+  updateStatus('Connecting to Alpha One...', '#3769ed');
+
+  await checkAlphaAccess();
+
+  console.log('Alpha One interface initialised.');
+
+}
+
+initialiseAlphaOne();
+
+</script>
