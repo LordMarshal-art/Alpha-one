@@ -11,502 +11,378 @@
 
 <style>
 :root {
-  --bg: #f5f7fb;
-  --white: #ffffff;
-  --text: #171b26;
-  --muted: #7b8495;
-  --blue: #3568ed;
-  --blue-light: #edf2ff;
-  --border: #e8ebf2;
-  --dark: #171d2b;
-  --green: #159b69;
-  --red: #d84d4d;
-  --shadow: 0 8px 28px rgba(25, 38, 65, .05);
+  --bg:#f5f7fb;
+  --white:#fff;
+  --text:#171b26;
+  --muted:#7b8495;
+  --blue:#3568ed;
+  --blue-light:#edf2ff;
+  --border:#e8ebf2;
+  --dark:#171d2b;
+  --green:#159b69;
+  --red:#d84d4d;
+  --shadow:0 8px 28px rgba(25,38,65,.05);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* {box-sizing:border-box;margin:0;padding:0}
 
 body {
-  font-family: Inter, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-button, input {
-  font: inherit;
-}
+button,input,textarea,select {font:inherit}
+button {cursor:pointer}
 
-button {
-  cursor: pointer;
-}
-
-.app {
-  min-height: 100vh;
-  display: flex;
-}
+.app {min-height:100vh;display:flex}
 
 .sidebar {
-  width: 245px;
-  background: var(--dark);
-  color: white;
-  padding: 25px 16px;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  overflow-y: auto;
-  z-index: 20;
+  width:245px;
+  background:var(--dark);
+  color:white;
+  padding:25px 16px;
+  position:fixed;
+  top:0;bottom:0;left:0;
+  overflow-y:auto;
+  z-index:20;
 }
 
 .brand {
-  padding: 5px 12px 30px;
-  border-bottom: 1px solid rgba(255,255,255,.09);
+  padding:5px 12px 30px;
+  border-bottom:1px solid rgba(255,255,255,.09);
 }
 
-.brand h1 {
-  font-size: 23px;
-  letter-spacing: 2px;
-}
-
-.brand span {
-  color: #7fa0ff;
-}
-
+.brand h1 {font-size:23px;letter-spacing:2px}
+.brand span {color:#7fa0ff}
 .brand p {
-  font-size: 11px;
-  color: #9ba5b7;
-  margin-top: 7px;
-  letter-spacing: 1.5px;
+  font-size:11px;color:#9ba5b7;
+  margin-top:7px;letter-spacing:1.5px;
 }
 
 .nav-label {
-  color: #7e8a9e;
-  font-size: 10px;
-  font-weight: bold;
-  letter-spacing: 1.5px;
-  padding: 25px 12px 10px;
+  color:#7e8a9e;font-size:10px;font-weight:bold;
+  letter-spacing:1.5px;padding:25px 12px 10px;
 }
 
 .nav-btn {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #aeb8c9;
-  padding: 12px;
-  margin: 3px 0;
-  border-radius: 9px;
-  text-align: left;
-  font-size: 13px;
-  transition: .2s;
+  display:flex;align-items:center;width:100%;
+  border:0;background:transparent;color:#aeb8c9;
+  padding:12px;margin:3px 0;border-radius:9px;
+  text-align:left;font-size:13px;transition:.2s;
 }
 
-.nav-btn:hover,
-.nav-btn.active {
-  background: #29354c;
-  color: white;
+.nav-btn:hover,.nav-btn.active {
+  background:#29354c;color:white;
 }
 
-.nav-btn.active {
-  border-left: 3px solid #7193ff;
-}
-
-.nav-icon {
-  width: 28px;
-  font-size: 16px;
-}
+.nav-btn.active {border-left:3px solid #7193ff}
+.nav-icon {width:28px;font-size:16px}
 
 .sidebar-bottom {
-  margin-top: 35px;
-  padding: 15px 12px;
-  border-top: 1px solid rgba(255,255,255,.09);
-  color: #8995a8;
-  font-size: 11px;
-  line-height: 1.7;
+  margin-top:35px;padding:15px 12px;
+  border-top:1px solid rgba(255,255,255,.09);
+  color:#8995a8;font-size:11px;line-height:1.7;
 }
 
 .main {
-  margin-left: 245px;
-  width: calc(100% - 245px);
-  min-width: 0;
+  margin-left:245px;
+  width:calc(100% - 245px);
+  min-width:0;
 }
 
 .topbar {
-  height: 72px;
-  background: white;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 32px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  height:72px;background:white;
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;
+  align-items:center;padding:0 32px;
+  position:sticky;top:0;z-index:10;
 }
 
-.topbar h2 {
-  font-size: 17px;
-}
+.topbar h2 {font-size:17px}
 
 .top-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--muted);
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--muted);
 }
 
 .status-dot {
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-  background: #e0a33a;
-  display: inline-block;
+  height:8px;width:8px;border-radius:50%;
+  background:#e0a33a;display:inline-block;
 }
+
+.status-dot.online {background:var(--green)}
+.status-dot.error {background:var(--red)}
 
 .content {
-  max-width: 1450px;
-  margin: auto;
-  padding: 30px 32px 60px;
+  max-width:1450px;margin:auto;
+  padding:30px 32px 60px;
 }
 
-.page {
-  display: none;
-}
+.page {display:none}
+.page.active {display:block}
 
-.page.active {
-  display: block;
-}
-
-.welcome {
-  margin-bottom: 25px;
-}
-
-.welcome h1 {
-  font-size: 27px;
-  margin-bottom: 8px;
-}
-
+.welcome {margin-bottom:25px}
+.welcome h1 {font-size:27px;margin-bottom:8px}
 .welcome p {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
+  color:var(--muted);font-size:13px;line-height:1.6;
 }
 
-.grid {
-  display: grid;
-  gap: 18px;
-}
-
-.grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
+.grid {display:grid;gap:18px}
+.grid-4 {grid-template-columns:repeat(4,1fr)}
+.grid-2 {grid-template-columns:repeat(2,1fr)}
 
 .card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 21px;
-  box-shadow: var(--shadow);
-  margin-bottom: 18px;
-  min-width: 0;
+  background:white;border:1px solid var(--border);
+  border-radius:13px;padding:21px;
+  box-shadow:var(--shadow);margin-bottom:18px;
+  min-width:0;
 }
 
-.stat-label {
-  font-size: 12px;
-  color: var(--muted);
-}
+.stat-label {font-size:12px;color:var(--muted)}
+.stat-value {font-size:27px;font-weight:700;margin-top:13px}
+.stat-note {font-size:11px;color:var(--muted);margin-top:8px}
 
-.stat-value {
-  font-size: 27px;
-  font-weight: 700;
-  margin-top: 13px;
-}
+.section-heading {font-size:16px;margin:25px 0 15px}
+.card h3 {font-size:15px;margin-bottom:10px}
+.card p {color:var(--muted);font-size:12px;line-height:1.7}
 
-.stat-note {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 8px;
-}
-
-.section-heading {
-  font-size: 16px;
-  margin: 25px 0 15px;
-}
-
-.card h3 {
-  font-size: 15px;
-  margin-bottom: 10px;
-}
-
-.card p {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-.project-card {
-  border-top: 3px solid var(--blue);
-}
+.project-card {border-top:3px solid var(--blue)}
 
 .project-tag {
-  display: inline-block;
-  background: var(--blue-light);
-  color: var(--blue);
-  font-size: 10px;
-  padding: 5px 9px;
-  border-radius: 20px;
-  margin-top: 13px;
+  display:inline-block;background:var(--blue-light);
+  color:var(--blue);font-size:10px;
+  padding:5px 9px;border-radius:20px;margin-top:13px;
 }
 
 .button {
-  border: 0;
-  border-radius: 8px;
-  background: var(--blue);
-  color: white;
-  padding: 11px 16px;
-  font-size: 12px;
-  font-weight: 600;
+  border:0;border-radius:8px;background:var(--blue);
+  color:white;padding:11px 16px;
+  font-size:12px;font-weight:600;
 }
 
-.button:hover {
-  opacity: .9;
-}
-
-.button.secondary {
-  background: var(--blue-light);
-  color: var(--blue);
-}
-
-.button.dark {
-  background: var(--dark);
-}
-
-.button.danger {
-  background: #fff0f0;
-  color: var(--red);
-}
-
-.button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
+.button:hover {opacity:.9}
+.button.secondary {background:var(--blue-light);color:var(--blue)}
+.button.dark {background:var(--dark)}
+.button.danger {background:#fff0f0;color:var(--red)}
+.button:disabled {opacity:.5;cursor:not-allowed}
 
 .input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin: 7px 0 14px;
-  background: #fbfcfe;
-  outline: none;
-  font-size: 13px;
+  width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:8px;margin:7px 0 14px;
+  background:#fbfcfe;outline:none;font-size:13px;
 }
 
-.input:focus {
-  border-color: var(--blue);
-}
+.input:focus {border-color:var(--blue)}
 
 .form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 8px;
+  display:block;font-size:12px;
+  font-weight:600;margin-top:8px;
 }
 
-.auth-card {
-  max-width: 480px;
-}
-
-.auth-card form {
-  margin-top: 18px;
-}
+.auth-card {max-width:480px}
+.auth-card form {margin-top:18px}
 
 .message {
-  padding: 11px;
-  border-radius: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 12px;
-  display: none;
+  padding:11px;border-radius:8px;font-size:12px;
+  line-height:1.5;margin-top:12px;display:none;
 }
 
-.message.show {
-  display: block;
-}
-
-.message.success {
-  background: #eaf8f1;
-  color: #14784f;
-}
-
-.message.error {
-  background: #fff0f0;
-  color: #b83c3c;
-}
-
-.message.info {
-  background: var(--blue-light);
-  color: #315ac5;
-}
+.message.show {display:block}
+.message.success {background:#eaf8f1;color:#14784f}
+.message.error {background:#fff0f0;color:#b83c3c}
+.message.info {background:var(--blue-light);color:#315ac5}
 
 .account-box {
-  background: #f7f9fd;
-  border: 1px solid var(--border);
-  padding: 14px;
-  border-radius: 9px;
-  margin: 15px 0;
-  font-size: 12px;
-  overflow-wrap: anywhere;
+  background:#f7f9fd;border:1px solid var(--border);
+  padding:14px;border-radius:9px;margin:15px 0;
+  font-size:12px;overflow-wrap:anywhere;
 }
 
 .feature-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
+  display:flex;justify-content:space-between;
+  gap:15px;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--border);
 }
 
-.feature-row:last-child {
-  border-bottom: 0;
-}
-
-.feature-row strong {
-  font-size: 12px;
-}
-
-.feature-row p {
-  margin-top: 5px;
-}
+.feature-row:last-child {border-bottom:0}
+.feature-row strong {font-size:12px}
+.feature-row p {margin-top:5px}
 
 .badge {
-  background: #fff4df;
-  color: #a56b0d;
-  border-radius: 20px;
-  padding: 5px 9px;
-  font-size: 10px;
-  white-space: nowrap;
+  background:#fff4df;color:#a56b0d;
+  border-radius:20px;padding:5px 9px;
+  font-size:10px;white-space:nowrap;
 }
 
-.badge.ready {
-  background: #e7f7ef;
-  color: #14784f;
-}
-
-.badge.off {
-  background: #f0f1f4;
-  color: #687184;
-}
-
-.chat-box {
-  min-height: 260px;
-  background: #fafbfe;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  margin: 15px 0;
-}
-
-.chat-placeholder {
-  color: var(--muted);
-  text-align: center;
-  padding: 65px 15px;
-  font-size: 13px;
-  line-height: 1.8;
-}
+.badge.ready {background:#e7f7ef;color:#14784f}
+.badge.off {background:#f0f1f4;color:#687184}
 
 .footer-note {
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 18px;
-  line-height: 1.7;
+  color:var(--muted);font-size:11px;
+  margin-top:18px;line-height:1.7;
 }
 
 .mobile-menu {
-  display: none;
-  border: 0;
-  background: transparent;
-  font-size: 23px;
-  color: var(--text);
+  display:none;border:0;background:transparent;
+  font-size:23px;color:var(--text);
 }
 
-@media(max-width: 1050px) {
-  .grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* AI CHAT */
+
+.chat-card {
+  padding:0;
+  overflow:hidden;
 }
 
-@media(max-width: 750px) {
+.chat-header {
+  padding:19px 21px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.chat-header h3 {margin:0}
+
+.chat-header small {
+  display:block;color:var(--muted);
+  font-size:11px;margin-top:5px;
+}
+
+.chat-box {
+  height:440px;
+  overflow-y:auto;
+  background:#fafbfe;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.chat-placeholder {
+  color:var(--muted);
+  text-align:center;
+  padding:90px 15px;
+  font-size:13px;
+  line-height:1.8;
+}
+
+.chat-message {
+  display:flex;
+  flex-direction:column;
+  max-width:85%;
+  gap:5px;
+}
+
+.chat-message.user {align-self:flex-end}
+.chat-message.assistant {align-self:flex-start}
+
+.chat-role {
+  font-size:10px;
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:.7px;
+}
+
+.chat-bubble {
+  padding:12px 15px;
+  border-radius:12px;
+  font-size:13px;
+  line-height:1.7;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.chat-message.user .chat-bubble {
+  background:var(--blue);
+  color:white;
+  border-bottom-right-radius:3px;
+}
+
+.chat-message.assistant .chat-bubble {
+  background:white;
+  border:1px solid var(--border);
+  color:var(--text);
+  border-bottom-left-radius:3px;
+}
+
+.chat-time {
+  font-size:9px;color:var(--muted);
+}
+
+.chat-composer {
+  padding:17px;
+  background:white;
+  border-top:1px solid var(--border);
+}
+
+.chat-composer textarea {
+  width:100%;
+  min-height:75px;
+  max-height:180px;
+  resize:vertical;
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:#fbfcfe;
+  font-size:13px;
+  outline:none;
+}
+
+.chat-composer textarea:focus {border-color:var(--blue)}
+
+.chat-controls {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-top:12px;
+}
+
+.chat-hint {font-size:10px;color:var(--muted)}
+
+.typing {
+  font-size:12px;
+  color:var(--muted);
+  padding:5px 2px;
+}
+
+.chat-model {
+  font-size:10px;color:var(--muted);
+  padding:10px 17px 0;
+}
+
+@media(max-width:1050px) {
+  .grid-4 {grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:750px) {
   .sidebar {
-    transform: translateX(-100%);
-    transition: .25s;
-    width: 260px;
+    transform:translateX(-100%);
+    transition:.25s;width:260px;
   }
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .mobile-menu {
-    display: block;
-  }
-
-  .topbar {
-    padding: 0 16px;
-    gap: 12px;
-  }
-
-  .topbar h2 {
-    font-size: 15px;
-    flex: 1;
-  }
-
-  .top-status {
-    font-size: 10px;
-  }
-
-  .content {
-    padding: 23px 15px 45px;
-  }
-
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
-
-  .welcome h1 {
-    font-size: 23px;
-  }
+  .sidebar.open {transform:translateX(0)}
+  .main {margin-left:0;width:100%}
+  .mobile-menu {display:block}
+  .topbar {padding:0 16px;gap:12px}
+  .topbar h2 {font-size:15px;flex:1}
+  .top-status {font-size:10px}
+  .content {padding:23px 15px 45px}
+  .grid-2 {grid-template-columns:1fr}
+  .welcome h1 {font-size:23px}
+  .chat-box {height:55vh;min-height:300px}
+  .chat-message {max-width:94%}
+  .chat-header {padding:15px}
 }
 
-@media(max-width: 420px) {
-  .grid-4 {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .card {
-    padding: 15px;
-  }
-
-  .stat-value {
-    font-size: 22px;
-  }
+@media(max-width:420px) {
+  .grid-4 {grid-template-columns:1fr 1fr;gap:10px}
+  .card {padding:15px}
+  .stat-value {font-size:22px}
+  .chat-controls {align-items:flex-start}
 }
 </style>
 </head>
@@ -565,7 +441,7 @@ button {
   <div class="sidebar-bottom">
     ALPHA ONE<br>
     Personal Command Centre<br>
-    Version 1.0 Foundation
+    Version 1.1 — AI Connection
   </div>
 
 </aside>
@@ -573,16 +449,13 @@ button {
 <main class="main">
 
 <header class="topbar">
-
   <button class="mobile-menu" id="mobileMenu">☰</button>
-
   <h2 id="pageTitle">Overview</h2>
 
   <div class="top-status">
     <span class="status-dot" id="statusDot"></span>
     <span id="systemStatus">Interface online</span>
   </div>
-
 </header>
 
 <div class="content">
@@ -621,8 +494,8 @@ button {
 
     <div class="card">
       <div class="stat-label">AI Engine</div>
-      <div class="stat-value" style="font-size:18px">Offline</div>
-      <div class="stat-note">Provider connection pending</div>
+      <div class="stat-value" style="font-size:18px" id="aiStatValue">Not tested</div>
+      <div class="stat-note">OpenRouter connection</div>
     </div>
 
   </div>
@@ -693,7 +566,7 @@ button {
         <strong>AI Provider</strong>
         <p>OpenRouter integration.</p>
       </div>
-      <span class="badge">Pending</span>
+      <span class="badge off" id="aiBadge">Not tested</span>
     </div>
 
   </div>
@@ -708,38 +581,67 @@ button {
   <div class="welcome">
     <h1>AI Assistant</h1>
     <p>
-      Your central interface for research, planning,
-      analysis and project management.
+      Your central intelligence interface for research,
+      planning, analysis and project management.
     </p>
   </div>
 
-  <div class="card">
+  <div class="card chat-card">
 
-    <h3>Alpha One Intelligence</h3>
-
-    <p>
-      The assistant interface is prepared. The AI model connection
-      has not yet been configured.
-    </p>
-
-    <div class="chat-box">
-      <div class="chat-placeholder">
-        <strong>ALPHA ONE</strong><br>
-        Intelligence engine awaiting connection.<br>
-        OpenRouter or another AI provider must be connected
-        through a secure backend before conversations can begin.
+    <div class="chat-header">
+      <div>
+        <h3>Alpha One Intelligence</h3>
+        <small id="chatConnectionStatus">Waiting for connection test</small>
       </div>
+
+      <button class="button secondary" id="clearChatButton">
+        Clear Chat
+      </button>
     </div>
 
-    <button class="button" disabled>AI Engine Not Connected</button>
+    <div class="chat-box" id="chatBox" aria-live="polite">
 
-    <p class="footer-note">
-      Your provider API key must never be placed directly inside
-      this public HTML file. It will be connected securely through
-      a backend service.
-    </p>
+      <div class="chat-placeholder" id="chatPlaceholder">
+        <strong>ALPHA ONE</strong><br><br>
+        Your intelligence system is ready for its first test.<br>
+        Sign in to your account and send a message below.
+      </div>
+
+    </div>
+
+    <div class="chat-model" id="chatModel">
+      AI model: Not yet tested
+    </div>
+
+    <div class="chat-composer">
+
+      <textarea
+        id="chatInput"
+        placeholder="Message Alpha One..."
+        maxlength="12000"
+        aria-label="Message Alpha One"
+      ></textarea>
+
+      <div class="chat-controls">
+        <span class="chat-hint">
+          Enter to send · Shift + Enter for a new line
+        </span>
+
+        <button class="button" id="sendButton">
+          Send Message
+        </button>
+      </div>
+
+      <div class="message" id="chatError"></div>
+
+    </div>
 
   </div>
+
+  <p class="footer-note">
+    Secure connection through Supabase Edge Functions and OpenRouter.
+    Conversations are currently temporary and are not saved to the database.
+  </p>
 
 </section>
 
@@ -754,7 +656,6 @@ button {
   </div>
 
   <div class="card">
-
     <h3>Agent Management</h3>
 
     <p>
@@ -793,7 +694,6 @@ button {
       </div>
       <span class="badge">Planned</span>
     </div>
-
   </div>
 
 </section>
@@ -1007,7 +907,7 @@ button {
         <strong>OpenRouter</strong>
         <p>AI model provider and model selection.</p>
       </div>
-      <span class="badge">Pending</span>
+      <span class="badge off" id="openRouterBadge">Not tested</span>
     </div>
 
     <div class="feature-row">
@@ -1128,6 +1028,7 @@ button {
 
 
 <script>
+
 /* =====================================
    ALPHA ONE CONFIGURATION
 ===================================== */
@@ -1138,8 +1039,11 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_JoplUxXVcfBfb2dDltRyaQ_qk6b01jy";
 
+const AI_FUNCTION_NAME = "alpha-chat";
+
 let alphaClient = null;
 let currentSession = null;
+let isSending = false;
 
 
 /* =====================================
@@ -1151,26 +1055,21 @@ const pages = document.querySelectorAll(".page");
 const pageTitle = document.getElementById("pageTitle");
 
 const pageNames = {
-  overview: "Overview",
-  assistant: "AI Assistant",
-  agents: "AI Agents",
-  projects: "Projects",
-  memory: "Memory",
-  developer: "Developer Centre",
-  automations: "Automations",
-  integrations: "Integrations",
-  settings: "Settings"
+  overview:"Overview",
+  assistant:"AI Assistant",
+  agents:"AI Agents",
+  projects:"Projects",
+  memory:"Memory",
+  developer:"Developer Centre",
+  automations:"Automations",
+  integrations:"Integrations",
+  settings:"Settings"
 };
 
 function showPage(pageName) {
 
-  pages.forEach(page => {
-    page.classList.remove("active");
-  });
-
-  navButtons.forEach(button => {
-    button.classList.remove("active");
-  });
+  pages.forEach(page => page.classList.remove("active"));
+  navButtons.forEach(button => button.classList.remove("active"));
 
   const selectedPage = document.getElementById(pageName);
 
@@ -1182,61 +1081,66 @@ function showPage(pageName) {
     '[data-page="' + pageName + '"]'
   );
 
-  if (selectedButton) {
-    selectedButton.classList.add("active");
-  }
+  if (selectedButton) selectedButton.classList.add("active");
 
   pageTitle.textContent = pageNames[pageName] || "Alpha One";
 
   document.getElementById("sidebar").classList.remove("open");
 
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
 navButtons.forEach(button => {
-
   button.addEventListener("click", () => {
-
     showPage(button.dataset.page);
-
   });
-
 });
 
-
 document.getElementById("mobileMenu").addEventListener("click", () => {
-
   document.getElementById("sidebar").classList.toggle("open");
-
 });
 
 
 /* =====================================
-   MESSAGE DISPLAY
+   MESSAGE AND STATUS HELPERS
 ===================================== */
 
-function showMessage(elementId, message, type) {
+function showMessage(elementId,message,type) {
 
   const element = document.getElementById(elementId);
 
   element.textContent = message;
   element.className = "message show " + type;
-
 }
 
+function hideMessage(elementId) {
 
-function setBadge(elementId, text, ready) {
+  const element = document.getElementById(elementId);
+
+  element.textContent = "";
+  element.className = "message";
+}
+
+function setBadge(elementId,text,ready) {
 
   const element = document.getElementById(elementId);
 
   if (!element) return;
 
   element.textContent = text;
+  element.className = ready ? "badge ready" : "badge off";
+}
 
-  element.className = ready
-    ? "badge ready"
-    : "badge off";
+function setSystemStatus(text,type) {
 
+  document.getElementById("systemStatus").textContent = text;
+
+  const dot = document.getElementById("statusDot");
+
+  dot.className = "status-dot";
+
+  if (type === "online") dot.classList.add("online");
+  if (type === "error") dot.classList.add("error");
 }
 
 
@@ -1248,8 +1152,7 @@ function initializeSupabase() {
 
   if (!window.supabase || !window.supabase.createClient) {
 
-    document.getElementById("systemStatus").textContent =
-      "Supabase library unavailable";
+    setSystemStatus("Supabase library unavailable","error");
 
     showMessage(
       "authMessage",
@@ -1267,8 +1170,7 @@ function initializeSupabase() {
       SUPABASE_PUBLISHABLE_KEY
     );
 
-    document.getElementById("systemStatus").textContent =
-      "Interface online";
+    setSystemStatus("Interface online","");
 
     return true;
 
@@ -1276,12 +1178,10 @@ function initializeSupabase() {
 
     console.error(error);
 
-    document.getElementById("systemStatus").textContent =
-      "Configuration error";
+    setSystemStatus("Configuration error","error");
 
     return false;
   }
-
 }
 
 
@@ -1303,25 +1203,28 @@ function updateAccountDisplay(session) {
 
     logoutButton.style.display = "inline-block";
 
-    setBadge("authBadge", "Signed in", true);
+    setBadge("authBadge","Signed in",true);
 
-    document.getElementById("systemStatus").textContent =
-      "Account connected";
+    setSystemStatus("Account connected","online");
 
   } else {
 
-    accountBox.textContent =
-      "You are currently signed out.";
+    accountBox.textContent = "You are currently signed out.";
 
     logoutButton.style.display = "none";
 
-    setBadge("authBadge", "Not signed in", false);
+    setBadge("authBadge","Not signed in",false);
 
-    document.getElementById("systemStatus").textContent =
-      "Interface online";
+    setSystemStatus("Interface online","");
 
+    setBadge("aiBadge","Sign in required",false);
+    setBadge("openRouterBadge","Sign in required",false);
+
+    document.getElementById("aiStatValue").textContent = "Not tested";
+
+    document.getElementById("chatConnectionStatus").textContent =
+      "Sign in to use Alpha One Intelligence";
   }
-
 }
 
 
@@ -1354,36 +1257,36 @@ document.getElementById("authForm").addEventListener(
     loginButton.disabled = true;
     loginButton.textContent = "Signing in...";
 
-    const { data, error } =
-      await alphaClient.auth.signInWithPassword({
-        email,
-        password
-      });
+    try {
 
-    loginButton.disabled = false;
-    loginButton.textContent = "Sign In";
+      const {data,error} =
+        await alphaClient.auth.signInWithPassword({
+          email,
+          password
+        });
 
-    if (error) {
+      if (error) throw error;
+
+      updateAccountDisplay(data.session);
 
       showMessage(
         "authMessage",
-        error.message,
-        "error"
+        "You have successfully signed in.",
+        "success"
       );
 
-      return;
+      await testDatabaseConnection();
+
+    } catch (error) {
+
+      showMessage("authMessage",error.message,"error");
+
+    } finally {
+
+      loginButton.disabled = false;
+      loginButton.textContent = "Sign In";
+
     }
-
-    updateAccountDisplay(data.session);
-
-    showMessage(
-      "authMessage",
-      "You have successfully signed in.",
-      "success"
-    );
-
-    await testDatabaseConnection();
-
   }
 );
 
@@ -1426,48 +1329,47 @@ document.getElementById("registerButton").addEventListener(
     registerButton.disabled = true;
     registerButton.textContent = "Creating account...";
 
-    const { data, error } =
-      await alphaClient.auth.signUp({
-        email,
-        password
-      });
+    try {
 
-    registerButton.disabled = false;
-    registerButton.textContent = "Create Account";
+      const {data,error} =
+        await alphaClient.auth.signUp({
+          email,
+          password
+        });
 
-    if (error) {
+      if (error) throw error;
 
-      showMessage(
-        "authMessage",
-        error.message,
-        "error"
-      );
+      if (data.session) {
 
-      return;
+        updateAccountDisplay(data.session);
+
+        showMessage(
+          "authMessage",
+          "Account created and signed in successfully.",
+          "success"
+        );
+
+        await testDatabaseConnection();
+
+      } else {
+
+        showMessage(
+          "authMessage",
+          "Account registration submitted. Check your email for a verification link if email confirmation is enabled.",
+          "success"
+        );
+      }
+
+    } catch (error) {
+
+      showMessage("authMessage",error.message,"error");
+
+    } finally {
+
+      registerButton.disabled = false;
+      registerButton.textContent = "Create Account";
+
     }
-
-    if (data.session) {
-
-      updateAccountDisplay(data.session);
-
-      showMessage(
-        "authMessage",
-        "Account created and signed in successfully.",
-        "success"
-      );
-
-      await testDatabaseConnection();
-
-    } else {
-
-      showMessage(
-        "authMessage",
-        "Account registration submitted. Check your email for a verification link if email confirmation is enabled.",
-        "success"
-      );
-
-    }
-
   }
 );
 
@@ -1482,30 +1384,22 @@ document.getElementById("logoutButton").addEventListener(
 
     if (!alphaClient) return;
 
-    const { error } = await alphaClient.auth.signOut();
+    const {error} = await alphaClient.auth.signOut();
 
     if (error) {
 
-      showMessage(
-        "authMessage",
-        error.message,
-        "error"
-      );
+      showMessage("authMessage",error.message,"error");
 
       return;
     }
 
     updateAccountDisplay(null);
 
-    setBadge("databaseBadge", "Not tested", false);
-    setBadge("developerDbBadge", "Not tested", false);
-    setBadge("integrationDbBadge", "Not tested", false);
+    setBadge("databaseBadge","Not tested",false);
+    setBadge("developerDbBadge","Not tested",false);
+    setBadge("integrationDbBadge","Not tested",false);
 
-    showMessage(
-      "authMessage",
-      "You have signed out.",
-      "success"
-    );
+    showMessage("authMessage","You have signed out.","success");
 
   }
 );
@@ -1546,61 +1440,362 @@ async function testDatabaseConnection() {
 
   try {
 
-    const { error } = await alphaClient
+    const {error} = await alphaClient
       .schema("alpha")
       .from("alpha_settings")
       .select("id")
       .limit(1);
 
-    if (error) {
+    if (error) throw error;
 
-      console.error("Database error:", error);
-
-      setBadge("databaseBadge", "Connection failed", false);
-      setBadge("developerDbBadge", "Connection failed", false);
-      setBadge("integrationDbBadge", "Connection failed", false);
-
-      showMessage(
-        "databaseMessage",
-        "Database test failed: " + error.message,
-        "error"
-      );
-
-    } else {
-
-      setBadge("databaseBadge", "Connected", true);
-      setBadge("developerDbBadge", "Connected", true);
-      setBadge("integrationDbBadge", "Connected", true);
-
-      showMessage(
-        "databaseMessage",
-        "Successful. Alpha One can access the alpha_settings table.",
-        "success"
-      );
-
-    }
-
-  } catch (error) {
-
-    console.error(error);
+    setBadge("databaseBadge","Connected",true);
+    setBadge("developerDbBadge","Connected",true);
+    setBadge("integrationDbBadge","Connected",true);
 
     showMessage(
       "databaseMessage",
-      "Unexpected error: " + error.message,
+      "Successful. Alpha One can access the alpha_settings table.",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error("Database error:",error);
+
+    setBadge("databaseBadge","Connection failed",false);
+    setBadge("developerDbBadge","Connection failed",false);
+    setBadge("integrationDbBadge","Connection failed",false);
+
+    showMessage(
+      "databaseMessage",
+      "Database test failed: " + error.message,
       "error"
     );
 
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "Test Database Connection";
+
   }
-
-  button.disabled = false;
-  button.textContent = "Test Database Connection";
-
 }
-
 
 document.getElementById("testDatabaseButton").addEventListener(
   "click",
   testDatabaseConnection
+);
+
+
+/* =====================================
+   AI CHAT DISPLAY
+===================================== */
+
+const chatBox = document.getElementById("chatBox");
+const chatInput = document.getElementById("chatInput");
+const sendButton = document.getElementById("sendButton");
+
+function removeChatPlaceholder() {
+
+  const placeholder = document.getElementById("chatPlaceholder");
+
+  if (placeholder) placeholder.remove();
+}
+
+function addChatMessage(role,message) {
+
+  removeChatPlaceholder();
+
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "chat-message " + role;
+
+  const label = document.createElement("div");
+
+  label.className = "chat-role";
+  label.textContent = role === "user" ? "YOU" : "ALPHA ONE";
+
+  const bubble = document.createElement("div");
+
+  bubble.className = "chat-bubble";
+
+  // Use textContent to prevent HTML/script injection.
+  bubble.textContent = message;
+
+  const time = document.createElement("div");
+
+  time.className = "chat-time";
+
+  time.textContent = new Date().toLocaleTimeString([],{
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+
+  wrapper.appendChild(label);
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(time);
+
+  chatBox.appendChild(wrapper);
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  return wrapper;
+}
+
+function addTypingIndicator() {
+
+  removeChatPlaceholder();
+
+  const indicator = document.createElement("div");
+
+  indicator.className = "typing";
+  indicator.id = "typingIndicator";
+  indicator.textContent = "Alpha One is thinking...";
+
+  chatBox.appendChild(indicator);
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeTypingIndicator() {
+
+  const indicator = document.getElementById("typingIndicator");
+
+  if (indicator) indicator.remove();
+}
+
+
+/* =====================================
+   AI CHAT CONNECTION
+===================================== */
+
+async function sendChatMessage() {
+
+  if (isSending) return;
+
+  const message = chatInput.value.trim();
+
+  if (!message) return;
+
+  hideMessage("chatError");
+
+  if (!alphaClient) {
+
+    showMessage(
+      "chatError",
+      "Supabase is unavailable. Refresh the page.",
+      "error"
+    );
+
+    return;
+  }
+
+  // Retrieve the current authenticated session.
+  let sessionData;
+
+  try {
+
+    const result = await alphaClient.auth.getSession();
+
+    if (result.error) throw result.error;
+
+    sessionData = result.data.session;
+
+  } catch (error) {
+
+    showMessage(
+      "chatError",
+      "Could not verify your account: " + error.message,
+      "error"
+    );
+
+    return;
+  }
+
+  if (!sessionData) {
+
+    showMessage(
+      "chatError",
+      "Please sign in through Settings before messaging Alpha One.",
+      "error"
+    );
+
+    return;
+  }
+
+  isSending = true;
+
+  const originalMessage = message;
+
+  chatInput.value = "";
+  chatInput.disabled = true;
+  sendButton.disabled = true;
+  sendButton.textContent = "Thinking...";
+
+  addChatMessage("user",originalMessage);
+  addTypingIndicator();
+
+  document.getElementById("chatConnectionStatus").textContent =
+    "Connecting to Alpha One intelligence...";
+
+  try {
+
+    /*
+      Supabase functions.invoke automatically attaches
+      the authenticated user's session token and API key.
+    */
+
+    const {data,error} = await alphaClient.functions.invoke(
+      AI_FUNCTION_NAME,
+      {
+        body:{
+          message:originalMessage
+        }
+      }
+    );
+
+    removeTypingIndicator();
+
+    if (error) {
+
+      console.error("Alpha One function error:",error);
+
+      let details = error.message || "The AI request failed.";
+
+      // Try to retrieve the response body from a Functions error.
+      if (error.context && typeof error.context.clone === "function") {
+
+        try {
+
+          const responseCopy = error.context.clone();
+          const responseText = await responseCopy.text();
+
+          if (responseText) {
+
+            try {
+
+              const responseJson = JSON.parse(responseText);
+
+              if (responseJson.error) {
+                details = responseJson.error;
+              }
+
+            } catch (_) {
+
+              details = responseText;
+
+            }
+          }
+
+        } catch (_) {
+          // Keep the original error message.
+        }
+      }
+
+      throw new Error(details);
+    }
+
+    if (!data || !data.success || !data.reply) {
+
+      throw new Error(
+        data && data.error
+          ? data.error
+          : "Alpha One returned an unexpected response."
+      );
+    }
+
+    addChatMessage("assistant",data.reply);
+
+    const modelName = data.model || "OpenRouter model";
+
+    document.getElementById("chatModel").textContent =
+      "AI model: " + modelName;
+
+    document.getElementById("chatConnectionStatus").textContent =
+      "AI connection active";
+
+    setBadge("aiBadge","Connected",true);
+    setBadge("openRouterBadge","Connected",true);
+
+    document.getElementById("aiStatValue").textContent = "Online";
+
+    setSystemStatus("Alpha One AI online","online");
+
+  } catch (error) {
+
+    console.error("Alpha One chat error:",error);
+
+    removeTypingIndicator();
+
+    addChatMessage(
+      "assistant",
+      "I couldn't complete that request. " + error.message
+    );
+
+    document.getElementById("chatConnectionStatus").textContent =
+      "AI request failed — check the connection";
+
+    setBadge("aiBadge","Connection failed",false);
+    setBadge("openRouterBadge","Connection failed",false);
+
+    document.getElementById("aiStatValue").textContent = "Error";
+
+    setSystemStatus("AI connection error","error");
+
+  } finally {
+
+    isSending = false;
+
+    chatInput.disabled = false;
+    sendButton.disabled = false;
+    sendButton.textContent = "Send Message";
+
+    chatInput.focus();
+
+  }
+}
+
+
+/* =====================================
+   CHAT BUTTON AND KEYBOARD
+===================================== */
+
+sendButton.addEventListener("click",sendChatMessage);
+
+chatInput.addEventListener("keydown",function(event) {
+
+  if (event.key === "Enter" && !event.shiftKey) {
+
+    event.preventDefault();
+
+    sendChatMessage();
+  }
+});
+
+
+/* =====================================
+   CLEAR CHAT
+===================================== */
+
+document.getElementById("clearChatButton").addEventListener(
+  "click",
+  function() {
+
+    if (isSending) return;
+
+    chatBox.innerHTML = `
+      <div class="chat-placeholder" id="chatPlaceholder">
+        <strong>ALPHA ONE</strong><br><br>
+        Conversation cleared.<br>
+        What would you like to work on?
+      </div>
+    `;
+
+    document.getElementById("chatModel").textContent =
+      "AI model: Not yet tested";
+
+    hideMessage("chatError");
+
+  }
 );
 
 
@@ -1616,7 +1811,7 @@ async function startAlphaOne() {
 
   try {
 
-    const { data, error } = await alphaClient.auth.getSession();
+    const {data,error} = await alphaClient.auth.getSession();
 
     if (error) throw error;
 
@@ -1627,7 +1822,7 @@ async function startAlphaOne() {
     }
 
     alphaClient.auth.onAuthStateChange(
-      (event, session) => {
+      (event,session) => {
 
         updateAccountDisplay(session);
 
@@ -1636,7 +1831,7 @@ async function startAlphaOne() {
 
   } catch (error) {
 
-    console.error("Startup error:", error);
+    console.error("Startup error:",error);
 
     showMessage(
       "authMessage",
@@ -1645,9 +1840,7 @@ async function startAlphaOne() {
     );
 
   }
-
 }
-
 
 startAlphaOne();
 
