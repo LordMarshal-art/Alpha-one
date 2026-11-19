@@ -1,310 +1,1657 @@
-<script>
-/* ==========================================
-   ALPHA ONE — SUPABASE CONNECTION
-========================================== */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5f7fb">
+<meta name="description" content="Alpha One — Your personal AI operating system.">
+<title>Alpha One | Command Centre</title>
 
-const SUPABASE_URL = 'https://jrupwyaggntgsulpaqyq.supabase.co';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --bg: #f5f7fb;
+  --white: #ffffff;
+  --text: #171b26;
+  --muted: #7b8495;
+  --blue: #3568ed;
+  --blue-light: #edf2ff;
+  --border: #e8ebf2;
+  --dark: #171d2b;
+  --green: #159b69;
+  --red: #d84d4d;
+  --shadow: 0 8px 28px rgba(25, 38, 65, .05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Inter, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 245px;
+  background: var(--dark);
+  color: white;
+  padding: 25px 16px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.brand {
+  padding: 5px 12px 30px;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+}
+
+.brand h1 {
+  font-size: 23px;
+  letter-spacing: 2px;
+}
+
+.brand span {
+  color: #7fa0ff;
+}
+
+.brand p {
+  font-size: 11px;
+  color: #9ba5b7;
+  margin-top: 7px;
+  letter-spacing: 1.5px;
+}
+
+.nav-label {
+  color: #7e8a9e;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  padding: 25px 12px 10px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #aeb8c9;
+  padding: 12px;
+  margin: 3px 0;
+  border-radius: 9px;
+  text-align: left;
+  font-size: 13px;
+  transition: .2s;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+  background: #29354c;
+  color: white;
+}
+
+.nav-btn.active {
+  border-left: 3px solid #7193ff;
+}
+
+.nav-icon {
+  width: 28px;
+  font-size: 16px;
+}
+
+.sidebar-bottom {
+  margin-top: 35px;
+  padding: 15px 12px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  color: #8995a8;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.main {
+  margin-left: 245px;
+  width: calc(100% - 245px);
+  min-width: 0;
+}
+
+.topbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar h2 {
+  font-size: 17px;
+}
+
+.top-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background: #e0a33a;
+  display: inline-block;
+}
+
+.content {
+  max-width: 1450px;
+  margin: auto;
+  padding: 30px 32px 60px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.welcome {
+  margin-bottom: 25px;
+}
+
+.welcome h1 {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
+
+.welcome p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 21px;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  min-width: 0;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 27px;
+  font-weight: 700;
+  margin-top: 13px;
+}
+
+.stat-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.section-heading {
+  font-size: 16px;
+  margin: 25px 0 15px;
+}
+
+.card h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.project-card {
+  border-top: 3px solid var(--blue);
+}
+
+.project-tag {
+  display: inline-block;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 10px;
+  padding: 5px 9px;
+  border-radius: 20px;
+  margin-top: 13px;
+}
+
+.button {
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  padding: 11px 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.button:hover {
+  opacity: .9;
+}
+
+.button.secondary {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+.button.dark {
+  background: var(--dark);
+}
+
+.button.danger {
+  background: #fff0f0;
+  color: var(--red);
+}
+
+.button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 7px 0 14px;
+  background: #fbfcfe;
+  outline: none;
+  font-size: 13px;
+}
+
+.input:focus {
+  border-color: var(--blue);
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.auth-card {
+  max-width: 480px;
+}
+
+.auth-card form {
+  margin-top: 18px;
+}
+
+.message {
+  padding: 11px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 12px;
+  display: none;
+}
+
+.message.show {
+  display: block;
+}
+
+.message.success {
+  background: #eaf8f1;
+  color: #14784f;
+}
+
+.message.error {
+  background: #fff0f0;
+  color: #b83c3c;
+}
+
+.message.info {
+  background: var(--blue-light);
+  color: #315ac5;
+}
+
+.account-box {
+  background: #f7f9fd;
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 9px;
+  margin: 15px 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.feature-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.feature-row:last-child {
+  border-bottom: 0;
+}
+
+.feature-row strong {
+  font-size: 12px;
+}
+
+.feature-row p {
+  margin-top: 5px;
+}
+
+.badge {
+  background: #fff4df;
+  color: #a56b0d;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.badge.ready {
+  background: #e7f7ef;
+  color: #14784f;
+}
+
+.badge.off {
+  background: #f0f1f4;
+  color: #687184;
+}
+
+.chat-box {
+  min-height: 260px;
+  background: #fafbfe;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 15px 0;
+}
+
+.chat-placeholder {
+  color: var(--muted);
+  text-align: center;
+  padding: 65px 15px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.footer-note {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 18px;
+  line-height: 1.7;
+}
+
+.mobile-menu {
+  display: none;
+  border: 0;
+  background: transparent;
+  font-size: 23px;
+  color: var(--text);
+}
+
+@media(max-width: 1050px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width: 750px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: .25s;
+    width: 260px;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .topbar {
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .topbar h2 {
+    font-size: 15px;
+    flex: 1;
+  }
+
+  .top-status {
+    font-size: 10px;
+  }
+
+  .content {
+    padding: 23px 15px 45px;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome h1 {
+    font-size: 23px;
+  }
+}
+
+@media(max-width: 420px) {
+  .grid-4 {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+
+  <div class="brand">
+    <h1>ALPHA<span> ONE</span></h1>
+    <p>INTELLIGENCE OPERATING SYSTEM</p>
+  </div>
+
+  <div class="nav-label">WORKSPACE</div>
+
+  <button class="nav-btn active" data-page="overview">
+    <span class="nav-icon">⌂</span> Overview
+  </button>
+
+  <button class="nav-btn" data-page="assistant">
+    <span class="nav-icon">✧</span> AI Assistant
+  </button>
+
+  <button class="nav-btn" data-page="agents">
+    <span class="nav-icon">◈</span> AI Agents
+  </button>
+
+  <button class="nav-btn" data-page="projects">
+    <span class="nav-icon">▦</span> Projects
+  </button>
+
+  <button class="nav-btn" data-page="memory">
+    <span class="nav-icon">◉</span> Memory
+  </button>
+
+  <div class="nav-label">SYSTEM</div>
+
+  <button class="nav-btn" data-page="developer">
+    <span class="nav-icon">⌘</span> Developer
+  </button>
+
+  <button class="nav-btn" data-page="automations">
+    <span class="nav-icon">⟳</span> Automations
+  </button>
+
+  <button class="nav-btn" data-page="integrations">
+    <span class="nav-icon">⌁</span> Integrations
+  </button>
+
+  <button class="nav-btn" data-page="settings">
+    <span class="nav-icon">⚙</span> Settings
+  </button>
+
+  <div class="sidebar-bottom">
+    ALPHA ONE<br>
+    Personal Command Centre<br>
+    Version 1.0 Foundation
+  </div>
+
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+
+  <button class="mobile-menu" id="mobileMenu">☰</button>
+
+  <h2 id="pageTitle">Overview</h2>
+
+  <div class="top-status">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="systemStatus">Interface online</span>
+  </div>
+
+</header>
+
+<div class="content">
+
+<!-- OVERVIEW -->
+
+<section class="page active" id="overview">
+
+  <div class="welcome">
+    <h1>Command Centre</h1>
+    <p>
+      Your central operating system for projects, intelligence,
+      automation and business management.
+    </p>
+  </div>
+
+  <div class="grid grid-4">
+
+    <div class="card">
+      <div class="stat-label">Active Projects</div>
+      <div class="stat-value">03</div>
+      <div class="stat-note">Current project portfolio</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">AI Agents</div>
+      <div class="stat-value">00</div>
+      <div class="stat-note">Integration pending</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Automations</div>
+      <div class="stat-value">00</div>
+      <div class="stat-note">Not activated</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">AI Engine</div>
+      <div class="stat-value" style="font-size:18px">Offline</div>
+      <div class="stat-note">Provider connection pending</div>
+    </div>
+
+  </div>
+
+  <h3 class="section-heading">Your Projects</h3>
+
+  <div class="grid grid-2">
+
+    <div class="card project-card">
+      <h3>485 MUSIC</h3>
+      <p>
+        Multi-vendor digital music marketplace for beats,
+        instrumentals, sample packs and production products.
+      </p>
+      <span class="project-tag">Marketplace</span>
+    </div>
+
+    <div class="card project-card">
+      <h3>FutureDecoded</h3>
+      <p>
+        Beat promotion platform for showcasing instrumentals,
+        building an audience and directing buyers to 485 MUSIC.
+      </p>
+      <span class="project-tag">Music Promotion</span>
+    </div>
+
+    <div class="card project-card">
+      <h3>Alpha One</h3>
+      <p>
+        Central intelligence platform for managing projects,
+        research, business operations and AI workflows.
+      </p>
+      <span class="project-tag">AI Operating System</span>
+    </div>
+
+  </div>
+
+  <h3 class="section-heading">System Status</h3>
+
+  <div class="card">
+
+    <div class="feature-row">
+      <div>
+        <strong>Dashboard Interface</strong>
+        <p>Website interface is running.</p>
+      </div>
+      <span class="badge ready">Online</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Supabase Authentication</strong>
+        <p>User account connection.</p>
+      </div>
+      <span class="badge off" id="authBadge">Not signed in</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Alpha Database</strong>
+        <p>Database connection test.</p>
+      </div>
+      <span class="badge off" id="databaseBadge">Not tested</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>AI Provider</strong>
+        <p>OpenRouter integration.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- AI ASSISTANT -->
+
+<section class="page" id="assistant">
+
+  <div class="welcome">
+    <h1>AI Assistant</h1>
+    <p>
+      Your central interface for research, planning,
+      analysis and project management.
+    </p>
+  </div>
+
+  <div class="card">
+
+    <h3>Alpha One Intelligence</h3>
+
+    <p>
+      The assistant interface is prepared. The AI model connection
+      has not yet been configured.
+    </p>
+
+    <div class="chat-box">
+      <div class="chat-placeholder">
+        <strong>ALPHA ONE</strong><br>
+        Intelligence engine awaiting connection.<br>
+        OpenRouter or another AI provider must be connected
+        through a secure backend before conversations can begin.
+      </div>
+    </div>
+
+    <button class="button" disabled>AI Engine Not Connected</button>
+
+    <p class="footer-note">
+      Your provider API key must never be placed directly inside
+      this public HTML file. It will be connected securely through
+      a backend service.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- AI AGENTS -->
+
+<section class="page" id="agents">
+
+  <div class="welcome">
+    <h1>AI Agents</h1>
+    <p>Specialised digital workers for your operations.</p>
+  </div>
+
+  <div class="card">
+
+    <h3>Agent Management</h3>
+
+    <p>
+      This section will manage specialised agents that can
+      perform approved tasks across your projects.
+    </p>
+
+    <div class="feature-row">
+      <div>
+        <strong>Research Agent</strong>
+        <p>Research and information gathering.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Business Manager</strong>
+        <p>Project and business monitoring.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Developer Agent</strong>
+        <p>Code analysis and development assistance.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Music Business Agent</strong>
+        <p>Music marketplace and artist operations.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- PROJECTS -->
+
+<section class="page" id="projects">
+
+  <div class="welcome">
+    <h1>Projects</h1>
+    <p>Manage your connected business and creative projects.</p>
+  </div>
+
+  <div class="grid grid-2">
+
+    <div class="card project-card">
+      <h3>485 MUSIC</h3>
+      <p>
+        Marketplace development, vendors, products,
+        payments and digital delivery.
+      </p>
+      <span class="project-tag">Active Project</span>
+    </div>
+
+    <div class="card project-card">
+      <h3>FutureDecoded</h3>
+      <p>
+        Instrumental showcases, beat marketing
+        and audience development.
+      </p>
+      <span class="project-tag">Active Project</span>
+    </div>
+
+    <div class="card project-card">
+      <h3>Alpha One</h3>
+      <p>
+        AI infrastructure, system development
+        and intelligent project management.
+      </p>
+      <span class="project-tag">Active Project</span>
+    </div>
+
+  </div>
+
+  <p class="footer-note">
+    Project information is currently displayed from the interface.
+    Dynamic database management will be enabled in a later stage.
+  </p>
+
+</section>
+
+
+<!-- MEMORY -->
+
+<section class="page" id="memory">
+
+  <div class="welcome">
+    <h1>Memory Centre</h1>
+    <p>Long-term knowledge and context management.</p>
+  </div>
+
+  <div class="card">
+
+    <h3>Alpha One Memory</h3>
+
+    <p>
+      This section is reserved for persistent memory,
+      project history, important decisions and saved knowledge.
+    </p>
+
+    <div class="feature-row">
+      <div>
+        <strong>Personal Memory</strong>
+        <p>Long-term user preferences and context.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Project Memory</strong>
+        <p>Decisions, milestones and project history.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Knowledge Retrieval</strong>
+        <p>Searchable stored information.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- DEVELOPER -->
+
+<section class="page" id="developer">
+
+  <div class="welcome">
+    <h1>Developer Centre</h1>
+    <p>Development tools and infrastructure monitoring.</p>
+  </div>
+
+  <div class="card">
+
+    <h3>Infrastructure</h3>
+
+    <div class="feature-row">
+      <div>
+        <strong>GitHub</strong>
+        <p>Repository and code management.</p>
+      </div>
+      <span class="badge">Not connected</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Supabase</strong>
+        <p>Database and authentication.</p>
+      </div>
+      <span class="badge" id="developerDbBadge">Not tested</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>AI Development</strong>
+        <p>AI-assisted development workflows.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- AUTOMATIONS -->
+
+<section class="page" id="automations">
+
+  <div class="welcome">
+    <h1>Automations</h1>
+    <p>Build controlled workflows for repetitive operations.</p>
+  </div>
+
+  <div class="card">
+
+    <h3>Automation Centre</h3>
+
+    <p>
+      Automated workflows will be configured here.
+      Each workflow will have permissions and approval controls.
+    </p>
+
+    <div class="feature-row">
+      <div>
+        <strong>Project Monitoring</strong>
+        <p>Monitor project progress and milestones.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Business Notifications</strong>
+        <p>Receive important business alerts.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Multi-Agent Workflows</strong>
+        <p>Coordinate specialised AI agents.</p>
+      </div>
+      <span class="badge">Planned</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- INTEGRATIONS -->
+
+<section class="page" id="integrations">
+
+  <div class="welcome">
+    <h1>Integrations</h1>
+    <p>Connect the external services that power Alpha One.</p>
+  </div>
+
+  <div class="card">
+
+    <div class="feature-row">
+      <div>
+        <strong>Supabase</strong>
+        <p>Authentication and database infrastructure.</p>
+      </div>
+      <span class="badge" id="integrationDbBadge">Not tested</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>OpenRouter</strong>
+        <p>AI model provider and model selection.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>GitHub</strong>
+        <p>Repository and development integration.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+    <div class="feature-row">
+      <div>
+        <strong>Cloud Hosting</strong>
+        <p>Secure backend and deployment.</p>
+      </div>
+      <span class="badge">Pending</span>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section class="page" id="settings">
+
+  <div class="welcome">
+    <h1>Settings</h1>
+    <p>Account access and system configuration.</p>
+  </div>
+
+  <div class="grid grid-2">
+
+    <div class="card auth-card">
+
+      <h3>Account Access</h3>
+
+      <p>
+        Create an Alpha One account or sign in to your existing
+        Supabase account.
+      </p>
+
+      <form id="authForm">
+
+        <label class="form-label" for="email">Email Address</label>
+        <input
+          class="input"
+          type="email"
+          id="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        >
+
+        <label class="form-label" for="password">Password</label>
+        <input
+          class="input"
+          type="password"
+          id="password"
+          placeholder="Minimum 8 characters"
+          autocomplete="current-password"
+          minlength="8"
+          required
+        >
+
+        <button class="button" type="submit" id="loginButton">
+          Sign In
+        </button>
+
+        <button class="button secondary" type="button" id="registerButton">
+          Create Account
+        </button>
+
+      </form>
+
+      <div class="message" id="authMessage"></div>
+
+      <div class="account-box" id="accountBox">
+        You are currently signed out.
+      </div>
+
+      <button class="button danger" id="logoutButton" style="display:none">
+        Sign Out
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Database Connection</h3>
+
+      <p>
+        Test whether Alpha One can access its dedicated database schema.
+      </p>
+
+      <br>
+
+      <button class="button" id="testDatabaseButton">
+        Test Database Connection
+      </button>
+
+      <div class="message" id="databaseMessage"></div>
+
+      <p class="footer-note">
+        You must sign in before testing access to protected tables.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+</div>
+</main>
+</div>
+
+
+<script>
+/* =====================================
+   ALPHA ONE CONFIGURATION
+===================================== */
+
+const SUPABASE_URL =
+  "https://jrupwyaggntgsulpaqyq.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-  'sb_publishable_JoplUxXVcfBfb2dDltRyaQ_qk6b01jy';
+  "sb_publishable_JoplUxXVcfBfb2dDltRyaQ_qk6b01jy";
 
-const alphaClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    db: {
-      schema: 'alpha'
-    },
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
-);
+let alphaClient = null;
+let currentSession = null;
 
 
-/* ==========================================
-   NAVIGATION
-========================================== */
+/* =====================================
+   PAGE NAVIGATION
+===================================== */
 
-function navigate(page, element) {
+const navButtons = document.querySelectorAll(".nav-btn");
+const pages = document.querySelectorAll(".page");
+const pageTitle = document.getElementById("pageTitle");
 
-  document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
+const pageNames = {
+  overview: "Overview",
+  assistant: "AI Assistant",
+  agents: "AI Agents",
+  projects: "Projects",
+  memory: "Memory",
+  developer: "Developer Centre",
+  automations: "Automations",
+  integrations: "Integrations",
+  settings: "Settings"
+};
+
+function showPage(pageName) {
+
+  pages.forEach(page => {
+    page.classList.remove("active");
   });
 
-  document.querySelectorAll('.nav-item').forEach(n => {
-    n.classList.remove('active');
+  navButtons.forEach(button => {
+    button.classList.remove("active");
   });
 
-  const target = document.getElementById(page);
+  const selectedPage = document.getElementById(pageName);
 
-  if (target) target.classList.add('active');
+  if (!selectedPage) return;
 
-  if (element) {
-    element.classList.add('active');
-  } else {
-    document.querySelectorAll('.nav-item').forEach(n => {
-      if (n.getAttribute('onclick')?.includes("'" + page + "'")) {
-        n.classList.add('active');
-      }
-    });
+  selectedPage.classList.add("active");
+
+  const selectedButton = document.querySelector(
+    '[data-page="' + pageName + '"]'
+  );
+
+  if (selectedButton) {
+    selectedButton.classList.add("active");
   }
 
-  document.getElementById('sidebar').classList.remove('open');
+  pageTitle.textContent = pageNames[pageName] || "Alpha One";
+
+  document.getElementById("sidebar").classList.remove("open");
+
+  window.scrollTo(0, 0);
 }
 
+navButtons.forEach(button => {
 
-function toggleMenu() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
+  button.addEventListener("click", () => {
 
+    showPage(button.dataset.page);
 
-/* ==========================================
-   SYSTEM STATUS
-========================================== */
-
-function updateStatus(message, color) {
-
-  const status = document.querySelector('.status');
-
-  status.textContent = message;
-  status.style.color = color;
-
-  status.style.setProperty('--status-color', color);
-}
-
-
-/* ==========================================
-   AUTHENTICATION
-========================================== */
-
-async function signUp() {
-
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-
-  const message = document.getElementById('authMessage');
-
-  if (!email || !password) {
-    message.textContent = 'Enter your email and password.';
-    return;
-  }
-
-  if (password.length < 6) {
-    message.textContent = 'Password must contain at least 6 characters.';
-    return;
-  }
-
-  message.textContent = 'Creating your Alpha One account...';
-
-  try {
-
-    const { data, error } = await alphaClient.auth.signUp({
-      email,
-      password
-    });
-
-    if (error) throw error;
-
-    if (data.session) {
-      message.textContent = 'Account created. You are now signed in.';
-    } else {
-      message.textContent =
-        'Account created. Check your email for a verification link before signing in.';
-    }
-
-  } catch (error) {
-
-    message.textContent = 'Registration failed: ' + error.message;
-
-  }
-}
-
-
-async function signIn() {
-
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-
-  const message = document.getElementById('authMessage');
-
-  if (!email || !password) {
-    message.textContent = 'Enter your email and password.';
-    return;
-  }
-
-  message.textContent = 'Signing in...';
-
-  try {
-
-    const { data, error } = await alphaClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) throw error;
-
-    message.textContent = 'Welcome. You are signed in to Alpha One.';
-
-    await checkAlphaAccess();
-
-  } catch (error) {
-
-    message.textContent = 'Sign-in failed: ' + error.message;
-
-  }
-}
-
-
-async function signOut() {
-
-  const message = document.getElementById('authMessage');
-
-  const { error } = await alphaClient.auth.signOut();
-
-  if (error) {
-    message.textContent = 'Sign-out failed: ' + error.message;
-    return;
-  }
-
-  message.textContent = 'You have signed out.';
-
-  updateStatus('Authentication required', '#b7791f');
-
-}
-
-
-/* ==========================================
-   VERIFY ALPHA DATABASE ACCESS
-========================================== */
-
-async function checkAlphaAccess() {
-
-  const message = document.getElementById('authMessage');
-
-  try {
-
-    const { data: sessionData, error: sessionError } =
-      await alphaClient.auth.getSession();
-
-    if (sessionError) throw sessionError;
-
-    const session = sessionData.session;
-
-    if (!session) {
-
-      updateStatus('Authentication required', '#b7791f');
-
-      message.textContent =
-        'Sign in to access your private Alpha One workspace.';
-
-      return;
-    }
-
-    updateStatus('Checking Alpha database...', '#3769ed');
-
-    const { error } = await alphaClient
-      .from('alpha_settings')
-      .select('id')
-      .limit(1);
-
-    if (error) throw error;
-
-    updateStatus('Alpha database connected', '#159b68');
-
-    message.textContent =
-      'Authenticated as ' + session.user.email +
-      '. Alpha database access verified.';
-
-    console.log('Alpha One database connection successful.');
-
-  } catch (error) {
-
-    updateStatus('Database connection error', '#d64545');
-
-    message.textContent =
-      'Database access error: ' + error.message;
-
-    console.error('Alpha One:', error);
-
-  }
-}
-
-
-/* ==========================================
-   AUTHENTICATION STATE LISTENER
-========================================== */
-
-alphaClient.auth.onAuthStateChange((event, session) => {
-
-  if (session) {
-
-    updateStatus('Authenticated', '#159b68');
-
-    document.getElementById('authMessage').textContent =
-      'Signed in as ' + session.user.email;
-
-  } else {
-
-    updateStatus('Authentication required', '#b7791f');
-
-  }
+  });
 
 });
 
 
-/* ==========================================
-   CHAT INTERFACE
-========================================== */
+document.getElementById("mobileMenu").addEventListener("click", () => {
 
-function sendMessage() {
+  document.getElementById("sidebar").classList.toggle("open");
 
-  const input = document.getElementById('chatInput');
-  const messages = document.getElementById('messages');
+});
 
-  const value = input.value.trim();
 
-  if (!value) return;
+/* =====================================
+   MESSAGE DISPLAY
+===================================== */
 
-  const userMessage = document.createElement('div');
+function showMessage(elementId, message, type) {
 
-  userMessage.className = 'message user';
-  userMessage.textContent = value;
+  const element = document.getElementById(elementId);
 
-  messages.appendChild(userMessage);
-
-  const response = document.createElement('div');
-
-  response.className = 'message ai';
-
-  response.textContent =
-    'Your message has been received. Alpha One is connected to its authentication and database infrastructure. The AI intelligence engine is not yet connected.';
-
-  messages.appendChild(response);
-
-  input.value = '';
-
-  messages.scrollTop = messages.scrollHeight;
+  element.textContent = message;
+  element.className = "message show " + type;
 
 }
 
 
-/* ==========================================
-   INITIALISE ALPHA ONE
-========================================== */
+function setBadge(elementId, text, ready) {
 
-async function initialiseAlphaOne() {
+  const element = document.getElementById(elementId);
 
-  updateStatus('Connecting to Alpha One...', '#3769ed');
+  if (!element) return;
 
-  await checkAlphaAccess();
+  element.textContent = text;
 
-  console.log('Alpha One interface initialised.');
+  element.className = ready
+    ? "badge ready"
+    : "badge off";
 
 }
 
-initialiseAlphaOne();
+
+/* =====================================
+   SUPABASE INITIALIZATION
+===================================== */
+
+function initializeSupabase() {
+
+  if (!window.supabase || !window.supabase.createClient) {
+
+    document.getElementById("systemStatus").textContent =
+      "Supabase library unavailable";
+
+    showMessage(
+      "authMessage",
+      "The Supabase library could not load. Check your internet connection and refresh the page.",
+      "error"
+    );
+
+    return false;
+  }
+
+  try {
+
+    alphaClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    document.getElementById("systemStatus").textContent =
+      "Interface online";
+
+    return true;
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById("systemStatus").textContent =
+      "Configuration error";
+
+    return false;
+  }
+
+}
+
+
+/* =====================================
+   AUTHENTICATION DISPLAY
+===================================== */
+
+function updateAccountDisplay(session) {
+
+  currentSession = session;
+
+  const accountBox = document.getElementById("accountBox");
+  const logoutButton = document.getElementById("logoutButton");
+
+  if (session && session.user) {
+
+    accountBox.textContent =
+      "Signed in as: " + session.user.email;
+
+    logoutButton.style.display = "inline-block";
+
+    setBadge("authBadge", "Signed in", true);
+
+    document.getElementById("systemStatus").textContent =
+      "Account connected";
+
+  } else {
+
+    accountBox.textContent =
+      "You are currently signed out.";
+
+    logoutButton.style.display = "none";
+
+    setBadge("authBadge", "Not signed in", false);
+
+    document.getElementById("systemStatus").textContent =
+      "Interface online";
+
+  }
+
+}
+
+
+/* =====================================
+   SIGN IN
+===================================== */
+
+document.getElementById("authForm").addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    if (!alphaClient) {
+
+      showMessage(
+        "authMessage",
+        "Supabase is unavailable. Refresh the page and try again.",
+        "error"
+      );
+
+      return;
+    }
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const loginButton = document.getElementById("loginButton");
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Signing in...";
+
+    const { data, error } =
+      await alphaClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    loginButton.disabled = false;
+    loginButton.textContent = "Sign In";
+
+    if (error) {
+
+      showMessage(
+        "authMessage",
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    updateAccountDisplay(data.session);
+
+    showMessage(
+      "authMessage",
+      "You have successfully signed in.",
+      "success"
+    );
+
+    await testDatabaseConnection();
+
+  }
+);
+
+
+/* =====================================
+   CREATE ACCOUNT
+===================================== */
+
+document.getElementById("registerButton").addEventListener(
+  "click",
+  async function() {
+
+    if (!alphaClient) {
+
+      showMessage(
+        "authMessage",
+        "Supabase is unavailable. Refresh the page and try again.",
+        "error"
+      );
+
+      return;
+    }
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || password.length < 8) {
+
+      showMessage(
+        "authMessage",
+        "Enter a valid email address and a password of at least 8 characters.",
+        "error"
+      );
+
+      return;
+    }
+
+    const registerButton = document.getElementById("registerButton");
+
+    registerButton.disabled = true;
+    registerButton.textContent = "Creating account...";
+
+    const { data, error } =
+      await alphaClient.auth.signUp({
+        email,
+        password
+      });
+
+    registerButton.disabled = false;
+    registerButton.textContent = "Create Account";
+
+    if (error) {
+
+      showMessage(
+        "authMessage",
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    if (data.session) {
+
+      updateAccountDisplay(data.session);
+
+      showMessage(
+        "authMessage",
+        "Account created and signed in successfully.",
+        "success"
+      );
+
+      await testDatabaseConnection();
+
+    } else {
+
+      showMessage(
+        "authMessage",
+        "Account registration submitted. Check your email for a verification link if email confirmation is enabled.",
+        "success"
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================
+   SIGN OUT
+===================================== */
+
+document.getElementById("logoutButton").addEventListener(
+  "click",
+  async function() {
+
+    if (!alphaClient) return;
+
+    const { error } = await alphaClient.auth.signOut();
+
+    if (error) {
+
+      showMessage(
+        "authMessage",
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    updateAccountDisplay(null);
+
+    setBadge("databaseBadge", "Not tested", false);
+    setBadge("developerDbBadge", "Not tested", false);
+    setBadge("integrationDbBadge", "Not tested", false);
+
+    showMessage(
+      "authMessage",
+      "You have signed out.",
+      "success"
+    );
+
+  }
+);
+
+
+/* =====================================
+   DATABASE CONNECTION TEST
+===================================== */
+
+async function testDatabaseConnection() {
+
+  const button = document.getElementById("testDatabaseButton");
+
+  if (!alphaClient) {
+
+    showMessage(
+      "databaseMessage",
+      "Supabase is not initialized.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (!currentSession) {
+
+    showMessage(
+      "databaseMessage",
+      "Sign in before testing database access.",
+      "info"
+    );
+
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Testing connection...";
+
+  try {
+
+    const { error } = await alphaClient
+      .schema("alpha")
+      .from("alpha_settings")
+      .select("id")
+      .limit(1);
+
+    if (error) {
+
+      console.error("Database error:", error);
+
+      setBadge("databaseBadge", "Connection failed", false);
+      setBadge("developerDbBadge", "Connection failed", false);
+      setBadge("integrationDbBadge", "Connection failed", false);
+
+      showMessage(
+        "databaseMessage",
+        "Database test failed: " + error.message,
+        "error"
+      );
+
+    } else {
+
+      setBadge("databaseBadge", "Connected", true);
+      setBadge("developerDbBadge", "Connected", true);
+      setBadge("integrationDbBadge", "Connected", true);
+
+      showMessage(
+        "databaseMessage",
+        "Successful. Alpha One can access the alpha_settings table.",
+        "success"
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "databaseMessage",
+      "Unexpected error: " + error.message,
+      "error"
+    );
+
+  }
+
+  button.disabled = false;
+  button.textContent = "Test Database Connection";
+
+}
+
+
+document.getElementById("testDatabaseButton").addEventListener(
+  "click",
+  testDatabaseConnection
+);
+
+
+/* =====================================
+   STARTUP
+===================================== */
+
+async function startAlphaOne() {
+
+  const initialized = initializeSupabase();
+
+  if (!initialized) return;
+
+  try {
+
+    const { data, error } = await alphaClient.auth.getSession();
+
+    if (error) throw error;
+
+    updateAccountDisplay(data.session);
+
+    if (data.session) {
+      await testDatabaseConnection();
+    }
+
+    alphaClient.auth.onAuthStateChange(
+      (event, session) => {
+
+        updateAccountDisplay(session);
+
+      }
+    );
+
+  } catch (error) {
+
+    console.error("Startup error:", error);
+
+    showMessage(
+      "authMessage",
+      "Could not retrieve account session: " + error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+startAlphaOne();
 
 </script>
+
+</body>
+</html>
