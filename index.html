@@ -3,2119 +3,1565 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f5f7fb">
+<meta name="theme-color" content="#0f131d">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Alpha One — Your personal AI operating system.">
-<title>Alpha One | Command Centre</title>
+<meta name="description" content="Alpha One — Personal AI Operating System.">
+<title>Alpha One</title>
 
-<link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alpha%20One%20Command%20Centre%22%2C%22short_name%22%3A%22Alpha%20One%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f7fb%22%2C%22theme_color%22%3A%22%23171d2b%22%7D">
+<link id="pwaManifestLink" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alpha%20One%22%2C%22short_name%22%3A%22Alpha%20One%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f131d%22%2C%22theme_color%22%3A%22%230f131d%22%7D">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
-  --bg:#f5f7fb;
-  --white:#fff;
-  --text:#171b26;
-  --muted:#7b8495;
-  --blue:#3568ed;
-  --blue-light:#edf2ff;
-  --border:#e8ebf2;
-  --dark:#171d2b;
-  --green:#159b69;
-  --red:#d84d4d;
-  --shadow:0 8px 28px rgba(25,38,65,.05);
+  --bg: #0f131d;
+  --panel: #151a27;
+  --panel-2: #1c2334;
+  --surface: #131824;
+  --text: #eef2fa;
+  --muted: #8f9bb0;
+  --accent: #4f7cff;
+  --accent-soft: rgba(79, 124, 255, 0.16);
+  --border: rgba(255, 255, 255, 0.08);
+  --green: #18b478;
+  --red: #e05757;
+  --amber: #e2a43b;
 }
 
-* {box-sizing:border-box;margin:0;padding:0}
-
-body {
-  font-family:Inter,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-button,input,textarea,select {font:inherit}
-button {cursor:pointer}
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
 
-.app {min-height:100vh;display:flex}
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
 
+button {
+  cursor: pointer;
+}
+
+.app {
+  height: 100dvh;
+  display: flex;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* LEFT COLUMN SIDEBAR */
 .sidebar {
-  width:245px;
-  background:var(--dark);
-  color:white;
-  padding:25px 16px;
-  position:fixed;
-  top:0;bottom:0;left:0;
-  overflow-y:auto;
-  z-index:20;
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  z-index: 30;
 }
 
-.brand {
-  padding:5px 12px 30px;
-  border-bottom:1px solid rgba(255,255,255,.09);
+.sidebar-top {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--border);
 }
 
-.brand h1 {font-size:23px;letter-spacing:2px}
-.brand span {color:#7fa0ff}
-.brand p {
-  font-size:11px;color:#9ba5b7;
-  margin-top:7px;letter-spacing:1.5px;
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.nav-label {
-  color:#7e8a9e;font-size:10px;font-weight:bold;
-  letter-spacing:1.5px;padding:25px 12px 10px;
+.brand-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.brand-title span {
+  color: var(--accent);
+}
+
+.version-pill {
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.new-chat-btn {
+  margin-top: 14px;
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: 0.15s ease;
+}
+
+.new-chat-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 10px 16px;
+}
+
+.col-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  padding: 10px 8px 6px;
+  text-transform: uppercase;
+}
+
+.thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.thread-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border-radius: 9px;
+  padding: 2px 4px 2px 2px;
+  transition: background 0.15s ease;
+}
+
+.thread-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.thread-item.active {
+  background: var(--accent-soft);
+}
+
+.thread-select-btn {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  padding: 8px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thread-del-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 6px 7px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.thread-del-btn:hover {
+  color: var(--red);
+  background: rgba(224, 87, 87, 0.14);
+}
+
+.col-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px;
+}
+
+.col-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.col-mode-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 7px 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.col-mode-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.col-toggle-btn {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .nav-btn {
-  display:flex;align-items:center;width:100%;
-  border:0;background:transparent;color:#aeb8c9;
-  padding:12px;margin:3px 0;border-radius:9px;
-  text-align:left;font-size:13px;transition:.2s;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 9px;
+  padding: 9px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  transition: 0.15s ease;
 }
 
-.nav-btn:hover,.nav-btn.active {
-  background:#29354c;color:white;
+.nav-btn:hover, .nav-btn.active {
+  background: var(--panel-2);
+  color: var(--text);
 }
 
-.nav-btn.active {border-left:3px solid #7193ff}
-.nav-icon {width:28px;font-size:16px}
-
-.sidebar-bottom {
-  margin-top:35px;padding:15px 12px;
-  border-top:1px solid rgba(255,255,255,.09);
-  color:#8995a8;font-size:11px;line-height:1.7;
+.nav-btn.active {
+  color: #fff;
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.status-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.status-wrap span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+.dot.online { background: var(--green); }
+.dot.error { background: var(--red); }
+
+/* MAIN CHAT-FIRST COLUMN */
 .main {
-  margin-left:245px;
-  width:calc(100% - 245px);
-  min-width:0;
+  flex: 1;
+  min-width: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
 }
 
 .topbar {
-  height:72px;background:white;
-  border-bottom:1px solid var(--border);
-  display:flex;justify-content:space-between;
-  align-items:center;padding:0 32px;
-  position:sticky;top:0;z-index:10;
+  height: 58px;
+  flex-shrink: 0;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 19, 29, 0.9);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.topbar h2 {font-size:17px}
-
-.top-status {
-  display:flex;align-items:center;gap:8px;
-  font-size:12px;color:var(--muted);
-}
-
-.status-dot {
-  height:8px;width:8px;border-radius:50%;
-  background:#e0a33a;display:inline-block;
-}
-
-.status-dot.online {background:var(--green)}
-.status-dot.error {background:var(--red)}
-
-.content {
-  max-width:1450px;margin:auto;
-  padding:30px 32px 60px;
-}
-
-.page {display:none}
-.page.active {display:block}
-
-.welcome {margin-bottom:25px}
-.welcome h1 {font-size:27px;margin-bottom:8px}
-.welcome p {
-  color:var(--muted);font-size:13px;line-height:1.6;
-}
-
-.grid {display:grid;gap:18px}
-.grid-4 {grid-template-columns:repeat(4,1fr)}
-.grid-2 {grid-template-columns:repeat(2,1fr)}
-
-.card {
-  background:white;border:1px solid var(--border);
-  border-radius:13px;padding:21px;
-  box-shadow:var(--shadow);margin-bottom:18px;
-  min-width:0;
-}
-
-.stat-label {font-size:12px;color:var(--muted)}
-.stat-value {font-size:27px;font-weight:700;margin-top:13px}
-.stat-note {font-size:11px;color:var(--muted);margin-top:8px}
-
-.section-heading {font-size:16px;margin:25px 0 15px}
-.card h3 {font-size:15px;margin-bottom:10px}
-.card p {color:var(--muted);font-size:12px;line-height:1.7}
-
-.project-card {border-top:3px solid var(--blue)}
-
-.project-tag {
-  display:inline-block;background:var(--blue-light);
-  color:var(--blue);font-size:10px;
-  padding:5px 9px;border-radius:20px;margin-top:13px;
-}
-
-.button {
-  border:0;border-radius:8px;background:var(--blue);
-  color:white;padding:11px 16px;
-  font-size:12px;font-weight:600;
-}
-
-.button:hover {opacity:.9}
-.button.secondary {background:var(--blue-light);color:var(--blue)}
-.button.dark {background:var(--dark)}
-.button.danger {background:#fff0f0;color:var(--red)}
-.button:disabled {opacity:.5;cursor:not-allowed}
-
-.input {
-  width:100%;padding:12px;border:1px solid var(--border);
-  border-radius:8px;margin:7px 0 14px;
-  background:#fbfcfe;outline:none;font-size:13px;
-}
-
-.input:focus {border-color:var(--blue)}
-
-.form-label {
-  display:block;font-size:12px;
-  font-weight:600;margin-top:8px;
-}
-
-.auth-card {max-width:480px}
-.auth-card form {margin-top:18px}
-
-.message {
-  padding:11px;border-radius:8px;font-size:12px;
-  line-height:1.5;margin-top:12px;display:none;
-}
-
-.message.show {display:block}
-.message.success {background:#eaf8f1;color:#14784f}
-.message.error {background:#fff0f0;color:#b83c3c}
-.message.info {background:var(--blue-light);color:#315ac5}
-
-.account-box {
-  background:#f7f9fd;border:1px solid var(--border);
-  padding:14px;border-radius:9px;margin:15px 0;
-  font-size:12px;overflow-wrap:anywhere;
-}
-
-.feature-row {
-  display:flex;justify-content:space-between;
-  gap:15px;align-items:center;
-  padding:14px 0;border-bottom:1px solid var(--border);
-}
-
-.feature-row:last-child {border-bottom:0}
-.feature-row strong {font-size:12px}
-.feature-row p {margin-top:5px}
-
-.badge {
-  background:#fff4df;color:#a56b0d;
-  border-radius:20px;padding:5px 9px;
-  font-size:10px;white-space:nowrap;
-}
-
-.badge.ready {background:#e7f7ef;color:#14784f}
-.badge.off {background:#f0f1f4;color:#687184}
-
-.footer-note {
-  color:var(--muted);font-size:11px;
-  margin-top:18px;line-height:1.7;
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
 .mobile-menu {
-  display:none;border:0;background:transparent;
-  font-size:23px;color:var(--text);
+  display: none;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
 }
 
-/* MEMORY CENTRE */
-
-.memory-filters {
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:14px;
+.page-title {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.memory-filters .input {
-  margin:0;
-  flex:1;
-  min-width:170px;
+.model-chip {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
 }
 
-.memory-filters select.input {
-  flex:0 0 auto;
-  min-width:150px;
+/* CHAT VIEW */
+.chat-view {
+  flex: 1;
+  min-height: 0;
+  display: none;
+  flex-direction: column;
 }
 
-.memory-item {
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:14px;
-  margin-top:12px;
-  background:#fbfcfe;
+.chat-view.active {
+  display: flex;
 }
 
-.memory-item-top {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:8px;
+.chat-stream {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.memory-meta {
-  font-size:10px;
-  color:var(--muted);
+.chat-inner {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.memory-content {
-  font-size:13px;
-  line-height:1.6;
-  color:var(--text);
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
+.empty-state {
+  margin: auto;
+  text-align: center;
+  max-width: 440px;
+  padding: 40px 16px;
 }
 
-.memory-actions {
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-  flex-wrap:wrap;
+.empty-state h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
-/* AI CHAT */
-
-.chat-card {
-  padding:0;
-  overflow:hidden;
+.empty-state p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
-.chat-header {
-  padding:19px 21px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
+.msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 86%;
 }
 
-.chat-header h3 {margin:0}
-
-.chat-header small {
-  display:block;color:var(--muted);
-  font-size:11px;margin-top:5px;
+.msg-row.user {
+  align-self: flex-end;
 }
 
-.chat-header-actions {
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:wrap;
+.msg-row.assistant {
+  align-self: flex-start;
 }
 
-.chat-history-bar {
-  padding:12px 21px;
-  background:#f7f9fd;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
+.msg-meta {
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
 }
 
-.chat-history-bar label {
-  font-size:11px;
-  font-weight:600;
-  color:var(--muted);
+.msg-bubble {
+  padding: 13px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.chat-select {
-  flex:1;
-  min-width:180px;
-  padding:8px 11px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:white;
-  font-size:12px;
-  color:var(--text);
-  outline:none;
+.msg-row.user .msg-bubble {
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
 }
 
-.chat-select:focus {border-color:var(--blue)}
-
-.button.small {
-  padding:8px 12px;
-  font-size:11px;
+.msg-row.assistant .msg-bubble {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
 }
 
-.button.listening {
-  background:#d84d4d;
-  color:white;
+.msg-img {
+  margin-top: 10px;
+  max-width: 100%;
+  max-height: 420px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
 }
 
-.chat-box {
-  height:440px;
-  overflow-y:auto;
-  background:#fafbfe;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-}
-
-.chat-placeholder {
-  color:var(--muted);
-  text-align:center;
-  padding:90px 15px;
-  font-size:13px;
-  line-height:1.8;
-}
-
-.chat-message {
-  display:flex;
-  flex-direction:column;
-  max-width:85%;
-  gap:5px;
-}
-
-.chat-message.user {align-self:flex-end}
-.chat-message.assistant {align-self:flex-start}
-
-.chat-role {
-  font-size:10px;
-  color:var(--muted);
-  font-weight:700;
-  letter-spacing:.7px;
-}
-
-.chat-bubble {
-  padding:12px 15px;
-  border-radius:12px;
-  font-size:13px;
-  line-height:1.7;
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-}
-
-.chat-message.user .chat-bubble {
-  background:var(--blue);
-  color:white;
-  border-bottom-right-radius:3px;
-}
-
-.chat-message.assistant .chat-bubble {
-  background:white;
-  border:1px solid var(--border);
-  color:var(--text);
-  border-bottom-left-radius:3px;
-}
-
-.chat-msg-actions {
-  display:flex;
-  gap:8px;
-  align-items:center;
+.msg-video {
+  margin-top: 10px;
+  max-width: 100%;
+  max-height: 420px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #000;
+  display: block;
 }
 
 .link-btn {
-  border:0;
-  background:transparent;
-  color:var(--blue);
-  font-size:10px;
-  font-weight:600;
-  padding:2px 0;
+  border: 0;
+  background: transparent;
+  color: #7ea0ff;
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.chat-time {
-  font-size:9px;color:var(--muted);
+.typing-bubble {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 6px 4px;
 }
 
-.chat-composer {
-  padding:17px;
-  background:white;
-  border-top:1px solid var(--border);
+/* BOTTOM COMPOSER */
+.composer-wrap {
+  flex-shrink: 0;
+  padding: 10px 16px 16px;
+  background: linear-gradient(to top, var(--bg) 75%, rgba(15, 19, 29, 0));
 }
 
-.chat-composer textarea {
-  width:100%;
-  min-height:75px;
-  max-height:180px;
-  resize:vertical;
-  padding:13px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  background:#fbfcfe;
-  font-size:13px;
-  outline:none;
+.composer-box {
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
-.chat-composer textarea:focus {border-color:var(--blue)}
-
-.chat-controls {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-top:12px;
-  flex-wrap:wrap;
+.composer-box:focus-within {
+  border-color: rgba(79, 124, 255, 0.65);
 }
 
-.chat-action-group {
-  display:flex;
-  gap:8px;
-  align-items:center;
+.composer-box textarea {
+  width: 100%;
+  min-height: 46px;
+  max-height: 170px;
+  resize: none;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  padding: 4px 2px;
 }
 
-.chat-hint {font-size:10px;color:var(--muted)}
-
-.typing {
-  font-size:12px;
-  color:var(--muted);
-  padding:5px 2px;
+.composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 
-.chat-model {
-  font-size:10px;color:var(--muted);
-  padding:10px 17px 0;
+.composer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
-@media(max-width:1050px) {
-  .grid-4 {grid-template-columns:repeat(2,1fr)}
+.mode-select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  outline: none;
 }
 
-@media(max-width:750px) {
+.composer-hint {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+.btn.danger { background: rgba(224, 87, 87, 0.16); color: #ff8686; }
+.btn.listening { background: var(--red); color: #fff; }
+.btn.sm { padding: 6px 10px; font-size: 11px; }
+
+/* SECONDARY PAGES */
+.secondary-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: none;
+  padding: 24px 20px 50px;
+}
+
+.secondary-view.active {
+  display: block;
+}
+
+.sec-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.sec-head {
+  margin-bottom: 20px;
+}
+
+.sec-head h1 {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.sec-head p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.panel-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.panel-card h3 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.panel-card p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.row-item:last-child { border-bottom: 0; }
+
+.badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(226, 164, 59, 0.15);
+  color: #f4be5b;
+  white-space: nowrap;
+}
+
+.badge.ok {
+  background: rgba(24, 180, 120, 0.16);
+  color: #4be3a4;
+}
+
+.badge.off {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+}
+
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 10px 0 5px;
+}
+
+.field-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--accent);
+}
+
+.alert {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  display: none;
+}
+
+.alert.show { display: block; }
+.alert.ok { background: rgba(24, 180, 120, 0.15); color: #67ebb3; }
+.alert.err { background: rgba(224, 87, 87, 0.16); color: #ff9494; }
+.alert.info { background: var(--accent-soft); color: #9db7ff; }
+
+.mem-card {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.mem-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.mem-cat {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9db7ff;
+  background: var(--accent-soft);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.mem-body {
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mem-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 25;
+}
+
+.backdrop.show { display: block; }
+
+@media (max-width: 900px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 780px) {
   .sidebar {
-    transform:translateX(-100%);
-    transition:.25s;width:260px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
   }
-
-  .sidebar.open {transform:translateX(0)}
-  .main {margin-left:0;width:100%}
-  .mobile-menu {display:block}
-  .topbar {padding:0 16px;gap:12px}
-  .topbar h2 {font-size:15px;flex:1}
-  .top-status {font-size:10px}
-  .content {padding:23px 15px 45px}
-  .grid-2 {grid-template-columns:1fr}
-  .welcome h1 {font-size:23px}
-  .chat-box {height:55vh;min-height:300px}
-  .chat-message {max-width:94%}
-  .chat-header {padding:15px}
-  .chat-history-bar {padding:10px 15px}
-}
-
-@media(max-width:420px) {
-  .grid-4 {grid-template-columns:1fr 1fr;gap:10px}
-  .card {padding:15px}
-  .stat-value {font-size:22px}
-  .chat-controls {align-items:flex-start}
+  .sidebar.open { transform: translateX(0); }
+  .mobile-menu { display: inline-flex; align-items: center; justify-content: center; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .msg-row { max-width: 94%; }
+  .composer-hint { display: none; }
+  .model-chip { max-width: 155px; }
 }
 </style>
 </head>
 
 <body>
+<div class="backdrop" id="backdrop"></div>
 
 <div class="app">
-
-<aside class="sidebar" id="sidebar">
-
-  <div class="brand">
-    <h1>ALPHA<span> ONE</span></h1>
-    <p>INTELLIGENCE OPERATING SYSTEM</p>
-  </div>
-
-  <div class="nav-label">WORKSPACE</div>
-
-  <button class="nav-btn active" data-page="overview">
-    <span class="nav-icon">⌂</span> Overview
-  </button>
-
-  <button class="nav-btn" data-page="assistant">
-    <span class="nav-icon">✧</span> AI Assistant
-  </button>
-
-  <button class="nav-btn" data-page="agents">
-    <span class="nav-icon">◈</span> AI Agents
-  </button>
-
-  <button class="nav-btn" data-page="projects">
-    <span class="nav-icon">▦</span> Projects
-  </button>
-
-  <button class="nav-btn" data-page="memory">
-    <span class="nav-icon">◉</span> Memory
-  </button>
-
-  <div class="nav-label">SYSTEM</div>
-
-  <button class="nav-btn" data-page="developer">
-    <span class="nav-icon">⌘</span> Developer
-  </button>
-
-  <button class="nav-btn" data-page="automations">
-    <span class="nav-icon">⟳</span> Automations
-  </button>
-
-  <button class="nav-btn" data-page="integrations">
-    <span class="nav-icon">⌁</span> Integrations
-  </button>
-
-  <button class="nav-btn" data-page="settings">
-    <span class="nav-icon">⚙</span> Settings
-  </button>
-
-  <div class="sidebar-bottom">
-    ALPHA ONE<br>
-    Personal Command Centre<br>
-    Version 1.4 — Voice & App Ready
-  </div>
-
-</aside>
-
-<main class="main">
-
-<header class="topbar">
-  <button class="mobile-menu" id="mobileMenu">☰</button>
-  <h2 id="pageTitle">Overview</h2>
-
-  <div class="top-status">
-    <span class="status-dot" id="statusDot"></span>
-    <span id="systemStatus">Interface online</span>
-  </div>
-</header>
-
-<div class="content">
-
-<!-- OVERVIEW -->
-
-<section class="page active" id="overview">
-
-  <div class="welcome">
-    <h1>Command Centre</h1>
-    <p>
-      Your central operating system for projects, intelligence,
-      automation and business management.
-    </p>
-  </div>
-
-  <div class="grid grid-4">
-
-    <div class="card">
-      <div class="stat-label">Active Projects</div>
-      <div class="stat-value">03</div>
-      <div class="stat-note">Current project portfolio</div>
-    </div>
-
-    <div class="card">
-      <div class="stat-label">AI Agents</div>
-      <div class="stat-value">00</div>
-      <div class="stat-note">Integration pending</div>
-    </div>
-
-    <div class="card">
-      <div class="stat-label">Automations</div>
-      <div class="stat-value">00</div>
-      <div class="stat-note">Not activated</div>
-    </div>
-
-    <div class="card">
-      <div class="stat-label">AI Engine</div>
-      <div class="stat-value" style="font-size:18px" id="aiStatValue">Not tested</div>
-      <div class="stat-note">OpenRouter connection</div>
-    </div>
-
-  </div>
-
-  <h3 class="section-heading">Your Projects</h3>
-
-  <div class="grid grid-2">
-
-    <div class="card project-card">
-      <h3>485 MUSIC</h3>
-      <p>
-        Multi-vendor digital music marketplace for beats,
-        instrumentals, sample packs and production products.
-      </p>
-      <span class="project-tag">Marketplace</span>
-    </div>
-
-    <div class="card project-card">
-      <h3>FutureDecoded</h3>
-      <p>
-        Beat promotion platform for showcasing instrumentals,
-        building an audience and directing buyers to 485 MUSIC.
-      </p>
-      <span class="project-tag">Music Promotion</span>
-    </div>
-
-    <div class="card project-card">
-      <h3>Alpha One</h3>
-      <p>
-        Central intelligence platform for managing projects,
-        research, business operations and AI workflows.
-      </p>
-      <span class="project-tag">AI Operating System</span>
-    </div>
-
-  </div>
-
-  <h3 class="section-heading">System Status</h3>
-
-  <div class="card">
-
-    <div class="feature-row">
-      <div>
-        <strong>Dashboard Interface</strong>
-        <p>Website interface is running.</p>
+  <!-- LEFT COLUMN: THREADS, MODES & NAVIGATION -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand-row">
+        <div class="brand-title">ALPHA<span> ONE</span></div>
+        <span class="version-pill">v1.6</span>
       </div>
-      <span class="badge ready">Online</span>
+      <button type="button" class="new-chat-btn" id="newChatBtn">
+        <span>+ New Chat</span>
+        <span>⌘</span>
+      </button>
     </div>
 
-    <div class="feature-row">
-      <div>
-        <strong>Supabase Authentication</strong>
-        <p>User account connection.</p>
-      </div>
-      <span class="badge off" id="authBadge">Not signed in</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>Alpha Database</strong>
-        <p>Database connection test.</p>
-      </div>
-      <span class="badge off" id="databaseBadge">Not tested</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>AI Provider</strong>
-        <p>OpenRouter integration.</p>
-      </div>
-      <span class="badge off" id="aiBadge">Not tested</span>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- AI ASSISTANT -->
-
-<section class="page" id="assistant">
-
-  <div class="welcome">
-    <h1>AI Assistant</h1>
-    <p>
-      Your central intelligence interface for research,
-      planning, analysis and project management.
-    </p>
-  </div>
-
-  <div class="card chat-card">
-
-    <div class="chat-header">
-      <div>
-        <h3>Alpha One Intelligence</h3>
-        <small id="chatConnectionStatus">Waiting for connection test</small>
+    <div class="sidebar-scroll">
+      <div class="col-section-label">Threads</div>
+      <div class="thread-list" id="threadList">
+        <div class="nav-btn" style="cursor:default">Sign in to load threads</div>
       </div>
 
-      <div class="chat-header-actions">
-        <button class="button secondary small" id="autoSpeakButton" type="button">
-          Auto-Speak: Off
-        </button>
-        <button class="button secondary small" id="newChatButton" type="button">
-          + New Chat
-        </button>
-        <button class="button danger small" id="deleteChatButton" type="button">
-          Delete Thread
+      <div class="col-section-label">Generation Mode</div>
+      <div class="col-controls">
+        <div class="col-mode-grid" role="group" aria-label="Mode">
+          <button type="button" class="col-mode-btn active" data-mode="chat">Chat</button>
+          <button type="button" class="col-mode-btn" data-mode="image">Image</button>
+          <button type="button" class="col-mode-btn" data-mode="video">Video</button>
+        </div>
+        <button type="button" class="col-toggle-btn" id="autoSpeakToggle">
+          <span>Auto-Speak</span>
+          <strong id="autoSpeakLabel">Off</strong>
         </button>
       </div>
-    </div>
 
-    <div class="chat-history-bar">
-      <label for="conversationSelect">Thread:</label>
-      <select class="chat-select" id="conversationSelect" aria-label="Saved conversations">
-        <option value="">New conversation (saved on first message)</option>
-      </select>
-    </div>
-
-    <div class="chat-box" id="chatBox" aria-live="polite">
-
-      <div class="chat-placeholder" id="chatPlaceholder">
-        <strong>ALPHA ONE</strong><br><br>
-        Your intelligence system is ready.<br>
-        Sign in to load saved conversations or start a new chat.
+      <div class="col-section-label">Workspace</div>
+      <div class="nav-list">
+        <button type="button" class="nav-btn active" data-view="chat">✦ Chat</button>
+        <button type="button" class="nav-btn" data-view="memory">◉ Memory</button>
+        <button type="button" class="nav-btn" data-view="projects">▦ Projects</button>
+        <button type="button" class="nav-btn" data-view="agents">◈ Agents</button>
+        <button type="button" class="nav-btn" data-view="overview">⌂ Overview</button>
       </div>
 
+      <div class="col-section-label">System</div>
+      <div class="nav-list">
+        <button type="button" class="nav-btn" data-view="automations">⟳ Automations</button>
+        <button type="button" class="nav-btn" data-view="integrations">⌁ Integrations</button>
+        <button type="button" class="nav-btn" data-view="developer">⌘ Developer</button>
+        <button type="button" class="nav-btn" data-view="settings">⚙ Settings</button>
+      </div>
     </div>
 
-    <div class="chat-model" id="chatModel">
-      AI model: Not yet tested
+    <div class="sidebar-footer">
+      <div class="status-wrap">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Online</span>
+      </div>
+      <span id="authStateShort">Signed out</span>
     </div>
+  </aside>
 
-    <div class="chat-composer">
+  <!-- MAIN COLUMN: CHAT-FIRST CANVAS -->
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="mobile-menu" id="mobileMenuBtn" aria-label="Toggle menu">☰</button>
+        <div class="page-title" id="topbarTitle">Alpha One</div>
+      </div>
+      <div class="model-chip" id="modelChip">openrouter/free</div>
+    </header>
 
-      <textarea
-        id="chatInput"
-        placeholder="Message Alpha One or tap Mic to speak..."
-        maxlength="12000"
-        aria-label="Message Alpha One"
-      ></textarea>
-
-      <div class="chat-controls">
-        <span class="chat-hint">
-          Enter to send · Shift + Enter for a new line · Online required for AI & sync
-        </span>
-
-        <div class="chat-action-group">
-          <button class="button secondary" id="micButton" type="button">
-            Mic
-          </button>
-          <button class="button" id="sendButton" type="button">
-            Send Message
-          </button>
+    <!-- PRIMARY CHAT WORKSPACE -->
+    <section class="chat-view active" id="view-chat">
+      <div class="chat-stream" id="chatStream" aria-live="polite">
+        <div class="chat-inner" id="chatInner">
+          <div class="empty-state" id="emptyState">
+            <h1>Alpha One</h1>
+            <p id="emptySubtext">
+              Chat uses <code>openrouter/free</code> auto routing ($0). Switch mode to Image or Video for media generation (requires OpenRouter credits).
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="message" id="chatError"></div>
-
-    </div>
-
-  </div>
-
-  <p class="footer-note">
-    Tip: In your mobile browser menu, tap "Add to Home screen" or "Install app" for quick app-style launch. Live AI chat and cloud sync require internet access.
-  </p>
-
-</section>
-
-
-<!-- AI AGENTS -->
-
-<section class="page" id="agents">
-
-  <div class="welcome">
-    <h1>AI Agents</h1>
-    <p>Specialised digital workers for your operations.</p>
-  </div>
-
-  <div class="card">
-    <h3>Agent Management</h3>
-
-    <p>
-      This section will manage specialised agents that can
-      perform approved tasks across your projects.
-    </p>
-
-    <div class="feature-row">
-      <div>
-        <strong>Research Agent</strong>
-        <p>Research and information gathering.</p>
+      <div class="composer-wrap">
+        <div class="composer-box">
+          <textarea
+            id="promptInput"
+            rows="1"
+            maxlength="12000"
+            placeholder="Message Alpha One..."
+            aria-label="Message Alpha One"
+          ></textarea>
+          <div class="composer-foot">
+            <div class="composer-left">
+              <select id="composerModeSelect" class="mode-select" aria-label="Generation mode">
+                <option value="chat">Mode: Chat (Free)</option>
+                <option value="image">Mode: Image</option>
+                <option value="video">Mode: Video</option>
+              </select>
+              <span class="composer-hint" id="composerHint">Enter to send · Shift+Enter newline</span>
+            </div>
+            <div class="composer-actions">
+              <button type="button" class="btn ghost sm" id="micBtn">Mic</button>
+              <button type="button" class="btn primary sm" id="sendBtn">Send</button>
+            </div>
+          </div>
+          <div class="alert" id="chatAlert"></div>
+        </div>
       </div>
-      <span class="badge">Planned</span>
-    </div>
+    </section>
 
-    <div class="feature-row">
-      <div>
-        <strong>Business Manager</strong>
-        <p>Project and business monitoring.</p>
+    <!-- MEMORY VIEW -->
+    <section class="secondary-view" id="view-memory">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Memory</h1>
+          <p>Persistent context stored in <code>alpha.alpha_memory</code> and included in chat prompts.</p>
+        </div>
+        <div class="grid-2">
+          <div class="panel-card">
+            <h3>Save or Update Memory</h3>
+            <p>Never store passwords, API keys, tokens, or private credentials.</p>
+            <form id="memoryForm">
+              <label class="field-label" for="memCategory">Category</label>
+              <select class="field-input" id="memCategory">
+                <option value="Personal">Personal</option>
+                <option value="Preferences">Preferences</option>
+                <option value="Projects">Projects</option>
+                <option value="Business">Business</option>
+                <option value="Music">Music</option>
+                <option value="Development">Development</option>
+                <option value="Goals">Goals</option>
+                <option value="Instructions">Instructions</option>
+              </select>
+              <label class="field-label" for="memContent">Note</label>
+              <textarea class="field-input" id="memContent" rows="3" maxlength="2000" required placeholder="e.g., Prefer concise answers on mobile."></textarea>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <button type="submit" class="btn primary" id="saveMemBtn">Save Memory</button>
+                <button type="button" class="btn ghost" id="cancelMemBtn" style="display:none">Cancel</button>
+              </div>
+            </form>
+            <div class="alert" id="memAlert"></div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Saved Memories</h3>
+            <div style="display:flex;gap:8px;margin:10px 0">
+              <input type="search" class="field-input" id="memSearch" placeholder="Search memories...">
+              <select class="field-input" id="memFilter" style="max-width:140px">
+                <option value="">All</option>
+                <option value="Personal">Personal</option>
+                <option value="Preferences">Preferences</option>
+                <option value="Projects">Projects</option>
+                <option value="Business">Business</option>
+                <option value="Music">Music</option>
+                <option value="Development">Development</option>
+                <option value="Goals">Goals</option>
+                <option value="Instructions">Instructions</option>
+                <option value="general">general</option>
+              </select>
+            </div>
+            <div id="memList"></div>
+          </div>
+        </div>
       </div>
-      <span class="badge">Planned</span>
-    </div>
+    </section>
 
-    <div class="feature-row">
-      <div>
-        <strong>Developer Agent</strong>
-        <p>Code analysis and development assistance.</p>
+    <!-- PROJECTS VIEW -->
+    <section class="secondary-view" id="view-projects">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Projects</h1>
+          <p>Core creative and software ventures managed under Alpha One.</p>
+        </div>
+        <div class="grid-2">
+          <div class="panel-card">
+            <h3>485 MUSIC</h3>
+            <p>Multi-vendor digital music marketplace for beats, instrumentals, sample packs, and production tools.</p>
+          </div>
+          <div class="panel-card">
+            <h3>FutureDecoded</h3>
+            <p>Beat promotion and audience showcase platform feeding traffic into 485 MUSIC.</p>
+          </div>
+          <div class="panel-card">
+            <h3>Alpha One</h3>
+            <p>Personal AI operating system with persistent threads, memory, voice, and multimodal generation.</p>
+          </div>
+        </div>
       </div>
-      <span class="badge">Planned</span>
-    </div>
+    </section>
 
-    <div class="feature-row">
-      <div>
-        <strong>Music Business Agent</strong>
-        <p>Music marketplace and artist operations.</p>
+    <!-- AGENTS VIEW -->
+    <section class="secondary-view" id="view-agents">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Agents</h1>
+          <p>Specialized workflows planned for Alpha One.</p>
+        </div>
+        <div class="panel-card">
+          <div class="row-item"><div><strong>Research Agent</strong><p>Topic synthesis and structured briefs.</p></div><span class="badge">Planned</span></div>
+          <div class="row-item"><div><strong>Business Manager</strong><p>Milestone tracking and operations.</p></div><span class="badge">Planned</span></div>
+          <div class="row-item"><div><strong>Developer Agent</strong><p>Code review and debugging support.</p></div><span class="badge">Planned</span></div>
+          <div class="row-item"><div><strong>Music Business Agent</strong><p>Catalog and release workflows.</p></div><span class="badge">Planned</span></div>
+        </div>
       </div>
-      <span class="badge">Planned</span>
-    </div>
-  </div>
+    </section>
 
-</section>
-
-
-<!-- PROJECTS -->
-
-<section class="page" id="projects">
-
-  <div class="welcome">
-    <h1>Projects</h1>
-    <p>Manage your connected business and creative projects.</p>
-  </div>
-
-  <div class="grid grid-2">
-
-    <div class="card project-card">
-      <h3>485 MUSIC</h3>
-      <p>
-        Marketplace development, vendors, products,
-        payments and digital delivery.
-      </p>
-      <span class="project-tag">Active Project</span>
-    </div>
-
-    <div class="card project-card">
-      <h3>FutureDecoded</h3>
-      <p>
-        Instrumental showcases, beat marketing
-        and audience development.
-      </p>
-      <span class="project-tag">Active Project</span>
-    </div>
-
-    <div class="card project-card">
-      <h3>Alpha One</h3>
-      <p>
-        AI infrastructure, system development
-        and intelligent project management.
-      </p>
-      <span class="project-tag">Active Project</span>
-    </div>
-
-  </div>
-
-  <p class="footer-note">
-    Project information is currently displayed from the interface.
-    Dynamic database management will be enabled in a later stage.
-  </p>
-
-</section>
-
-
-<!-- MEMORY -->
-
-<section class="page" id="memory">
-
-  <div class="welcome">
-    <h1>Memory Centre</h1>
-    <p>Long-term knowledge, preferences, decisions, and context injected into Alpha One.</p>
-  </div>
-
-  <div class="grid grid-2">
-
-    <div class="card">
-      <h3>Add or Update Memory</h3>
-      <p>
-        Store non-sensitive context for Alpha One. Never save passwords, tokens, or API keys.
-      </p>
-
-      <form id="memoryForm">
-        <label class="form-label" for="memoryCategory">Category</label>
-        <select class="input" id="memoryCategory">
-          <option value="Personal">Personal</option>
-          <option value="Preferences">Preferences</option>
-          <option value="Projects">Projects</option>
-          <option value="Business">Business</option>
-          <option value="Music">Music</option>
-          <option value="Development">Development</option>
-          <option value="Goals">Goals</option>
-          <option value="Instructions">Instructions</option>
-        </select>
-
-        <label class="form-label" for="memoryContent">Memory Note</label>
-        <textarea
-          class="input"
-          id="memoryContent"
-          rows="3"
-          maxlength="2000"
-          placeholder="e.g., Prefer concise mobile-friendly instructions when working from phone."
-          required
-        ></textarea>
-
-        <button class="button" type="submit" id="saveMemoryButton">
-          Save Memory
-        </button>
-        <button class="button secondary" type="button" id="cancelEditMemoryButton" style="display:none">
-          Cancel Edit
-        </button>
-      </form>
-
-      <div class="message" id="memoryMessage"></div>
-    </div>
-
-    <div class="card">
-      <h3>Stored Memories</h3>
-      <p>Search and filter saved entries from <code>alpha.alpha_memory</code>.</p>
-
-      <div class="memory-filters" style="margin-top:12px">
-        <input
-          class="input"
-          type="search"
-          id="memorySearchInput"
-          placeholder="Search memories..."
-          aria-label="Search memories"
-        >
-        <select class="input" id="memoryFilterCategory" aria-label="Filter by category">
-          <option value="">All categories</option>
-          <option value="Personal">Personal</option>
-          <option value="Preferences">Preferences</option>
-          <option value="Projects">Projects</option>
-          <option value="Business">Business</option>
-          <option value="Music">Music</option>
-          <option value="Development">Development</option>
-          <option value="Goals">Goals</option>
-          <option value="Instructions">Instructions</option>
-          <option value="general">general</option>
-        </select>
+    <!-- OVERVIEW VIEW -->
+    <section class="secondary-view" id="view-overview">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Overview</h1>
+          <p>System telemetry and live connection health.</p>
+        </div>
+        <div class="grid-4">
+          <div class="panel-card"><p>Active Projects</p><div class="stat-val">03</div></div>
+          <div class="panel-card"><p>AI Agents</p><div class="stat-val">00</div></div>
+          <div class="panel-card"><p>Automations</p><div class="stat-val">00</div></div>
+          <div class="panel-card"><p>AI Engine</p><div class="stat-val" id="ovAiStat" style="font-size:16px">Ready</div></div>
+        </div>
+        <div class="panel-card">
+          <div class="row-item"><div><strong>Interface</strong><p>Chat-first Alpha One frontend.</p></div><span class="badge ok">Online</span></div>
+          <div class="row-item"><div><strong>Authentication</strong><p>Supabase user session.</p></div><span class="badge off" id="ovAuthBadge">Signed out</span></div>
+          <div class="row-item"><div><strong>Database</strong><p><code>alpha</code> schema connection.</p></div><span class="badge off" id="ovDbBadge">Not tested</span></div>
+          <div class="row-item"><div><strong>OpenRouter</strong><p>Edge Function gateway.</p></div><span class="badge off" id="ovOrBadge">Not tested</span></div>
+        </div>
       </div>
+    </section>
 
-      <div id="memoryList">
-        <p class="footer-note">Sign in through Settings to view and manage your saved memories.</p>
+    <!-- AUTOMATIONS VIEW -->
+    <section class="secondary-view" id="view-automations">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Automations</h1>
+          <p>Scheduled and event-driven routines (planned).</p>
+        </div>
+        <div class="panel-card">
+          <div class="row-item"><div><strong>Project Monitoring</strong><p>Periodic status check-ins.</p></div><span class="badge">Planned</span></div>
+          <div class="row-item"><div><strong>Business Alerts</strong><p>Key event notifications.</p></div><span class="badge">Planned</span></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-  </div>
-
-</section>
-
-
-<!-- DEVELOPER -->
-
-<section class="page" id="developer">
-
-  <div class="welcome">
-    <h1>Developer Centre</h1>
-    <p>Development tools and infrastructure monitoring.</p>
-  </div>
-
-  <div class="card">
-
-    <h3>Infrastructure</h3>
-
-    <div class="feature-row">
-      <div>
-        <strong>GitHub</strong>
-        <p>Repository and code management.</p>
+    <!-- INTEGRATIONS VIEW -->
+    <section class="secondary-view" id="view-integrations">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Integrations</h1>
+          <p>Connected services backing Alpha One.</p>
+        </div>
+        <div class="panel-card">
+          <div class="row-item"><div><strong>Supabase</strong><p>Auth, Postgres (<code>alpha</code> schema), and Edge Functions.</p></div><span class="badge off" id="intDbBadge">Not tested</span></div>
+          <div class="row-item"><div><strong>OpenRouter</strong><p><code>openrouter/free</code> chat plus image & video endpoints.</p></div><span class="badge off" id="intOrBadge">Not tested</span></div>
+        </div>
       </div>
-      <span class="badge">Not connected</span>
-    </div>
+    </section>
 
-    <div class="feature-row">
-      <div>
-        <strong>Supabase</strong>
-        <p>Database and authentication.</p>
+    <!-- DEVELOPER VIEW -->
+    <section class="secondary-view" id="view-developer">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Developer</h1>
+          <p>Runtime diagnostics and deployment notes.</p>
+        </div>
+        <div class="panel-card">
+          <div class="row-item"><div><strong>Edge Function</strong><p><code>alpha-chat</code> handles chat, memory, images, and async video polling.</p></div><span class="badge ok">Active</span></div>
+          <div class="row-item"><div><strong>Database Schema</strong><p><code>alpha_conversations</code>, <code>alpha_messages</code>, <code>alpha_memory</code>, <code>alpha_settings</code>.</p></div><span class="badge off" id="devDbBadge">Not tested</span></div>
+        </div>
       </div>
-      <span class="badge" id="developerDbBadge">Not tested</span>
-    </div>
+    </section>
 
-    <div class="feature-row">
-      <div>
-        <strong>AI Development</strong>
-        <p>AI-assisted development workflows.</p>
+    <!-- SETTINGS VIEW -->
+    <section class="secondary-view" id="view-settings">
+      <div class="sec-inner">
+        <div class="sec-head">
+          <h1>Settings</h1>
+          <p>Account sign-in and database verification.</p>
+        </div>
+        <div class="grid-2">
+          <div class="panel-card">
+            <h3>Account Access</h3>
+            <form id="authForm">
+              <label class="field-label" for="authEmail">Email</label>
+              <input type="email" class="field-input" id="authEmail" required placeholder="you@example.com">
+              <label class="field-label" for="authPass">Password</label>
+              <input type="password" class="field-input" id="authPass" minlength="8" required placeholder="Minimum 8 characters">
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button type="submit" class="btn primary" id="signInBtn">Sign In</button>
+                <button type="button" class="btn ghost" id="signUpBtn">Create Account</button>
+              </div>
+            </form>
+            <div class="alert" id="authAlert"></div>
+            <div class="mem-card" id="accountCard">Not signed in.</div>
+            <button type="button" class="btn danger" id="signOutBtn" style="display:none;margin-top:10px">Sign Out</button>
+          </div>
+
+          <div class="panel-card">
+            <h3>Database Check</h3>
+            <p>Verify read access to <code>alpha.alpha_settings</code> under your signed-in session.</p>
+            <button type="button" class="btn primary" id="testDbBtn" style="margin-top:12px">Test Database Connection</button>
+            <div class="alert" id="dbAlert"></div>
+          </div>
+        </div>
       </div>
-      <span class="badge">Pending</span>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- AUTOMATIONS -->
-
-<section class="page" id="automations">
-
-  <div class="welcome">
-    <h1>Automations</h1>
-    <p>Build controlled workflows for repetitive operations.</p>
-  </div>
-
-  <div class="card">
-
-    <h3>Automation Centre</h3>
-
-    <p>
-      Automated workflows will be configured here.
-      Each workflow will have permissions and approval controls.
-    </p>
-
-    <div class="feature-row">
-      <div>
-        <strong>Project Monitoring</strong>
-        <p>Monitor project progress and milestones.</p>
-      </div>
-      <span class="badge">Planned</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>Business Notifications</strong>
-        <p>Receive important business alerts.</p>
-      </div>
-      <span class="badge">Planned</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>Multi-Agent Workflows</strong>
-        <p>Coordinate specialised AI agents.</p>
-      </div>
-      <span class="badge">Planned</span>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- INTEGRATIONS -->
-
-<section class="page" id="integrations">
-
-  <div class="welcome">
-    <h1>Integrations</h1>
-    <p>Connect the external services that power Alpha One.</p>
-  </div>
-
-  <div class="card">
-
-    <div class="feature-row">
-      <div>
-        <strong>Supabase</strong>
-        <p>Authentication and database infrastructure.</p>
-      </div>
-      <span class="badge" id="integrationDbBadge">Not tested</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>OpenRouter</strong>
-        <p>AI model provider and model selection.</p>
-      </div>
-      <span class="badge off" id="openRouterBadge">Not tested</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>GitHub</strong>
-        <p>Repository and development integration.</p>
-      </div>
-      <span class="badge">Pending</span>
-    </div>
-
-    <div class="feature-row">
-      <div>
-        <strong>Cloud Hosting</strong>
-        <p>Secure backend and deployment.</p>
-      </div>
-      <span class="badge">Pending</span>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- SETTINGS -->
-
-<section class="page" id="settings">
-
-  <div class="welcome">
-    <h1>Settings</h1>
-    <p>Account access and system configuration.</p>
-  </div>
-
-  <div class="grid grid-2">
-
-    <div class="card auth-card">
-
-      <h3>Account Access</h3>
-
-      <p>
-        Create an Alpha One account or sign in to your existing
-        Supabase account.
-      </p>
-
-      <form id="authForm">
-
-        <label class="form-label" for="email">Email Address</label>
-        <input
-          class="input"
-          type="email"
-          id="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-          required
-        >
-
-        <label class="form-label" for="password">Password</label>
-        <input
-          class="input"
-          type="password"
-          id="password"
-          placeholder="Minimum 8 characters"
-          autocomplete="current-password"
-          minlength="8"
-          required
-        >
-
-        <button class="button" type="submit" id="loginButton">
-          Sign In
-        </button>
-
-        <button class="button secondary" type="button" id="registerButton">
-          Create Account
-        </button>
-
-      </form>
-
-      <div class="message" id="authMessage"></div>
-
-      <div class="account-box" id="accountBox">
-        You are currently signed out.
-      </div>
-
-      <button class="button danger" id="logoutButton" style="display:none">
-        Sign Out
-      </button>
-
-    </div>
-
-    <div class="card">
-
-      <h3>Database Connection</h3>
-
-      <p>
-        Test whether Alpha One can access its dedicated database schema.
-      </p>
-
-      <br>
-
-      <button class="button" id="testDatabaseButton">
-        Test Database Connection
-      </button>
-
-      <div class="message" id="databaseMessage"></div>
-
-      <p class="footer-note">
-        You must sign in before testing access to protected tables.
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
-
+    </section>
+  </main>
 </div>
-</main>
-</div>
-
 
 <script>
-
-/* =====================================
-   ALPHA ONE CONFIGURATION
-===================================== */
-
-const SUPABASE_URL =
-  "https://jrupwyaggntgsulpaqyq.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_JoplUxXVcfBfb2dDltRyaQ_qk6b01jy";
-
+const SUPABASE_URL = "https://jrupwyaggntgsulpaqyq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_JoplUxXVcfBfb2dDltRyaQ_qk6b01jy";
 const AI_FUNCTION_NAME = "alpha-chat";
 
 let alphaClient = null;
 let currentSession = null;
 let isSending = false;
 let activeConversationId = null;
+let activeMode = "chat";
 let conversationsCache = [];
 let memoriesCache = [];
 let editingMemoryId = null;
-let autoSpeakEnabled = false;
-let speechRecognition = null;
-let isListening = false;
+let autoSpeak = false;
+let recognition = null;
+let listening = false;
 
+const sidebar = document.getElementById("sidebar");
+const backdrop = document.getElementById("backdrop");
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const topbarTitle = document.getElementById("topbarTitle");
+const modelChip = document.getElementById("modelChip");
+const chatStream = document.getElementById("chatStream");
+const chatInner = document.getElementById("chatInner");
+const promptInput = document.getElementById("promptInput");
+const sendBtn = document.getElementById("sendBtn");
+const micBtn = document.getElementById("micBtn");
+const newChatBtn = document.getElementById("newChatBtn");
+const threadListEl = document.getElementById("threadList");
+const composerModeSelect = document.getElementById("composerModeSelect");
+const composerHint = document.getElementById("composerHint");
+const autoSpeakToggle = document.getElementById("autoSpeakToggle");
+const autoSpeakLabel = document.getElementById("autoSpeakLabel");
 
-/* =====================================
-   PAGE NAVIGATION
-===================================== */
-
-const navButtons = document.querySelectorAll(".nav-btn");
-const pages = document.querySelectorAll(".page");
-const pageTitle = document.getElementById("pageTitle");
-
-const pageNames = {
-  overview:"Overview",
-  assistant:"AI Assistant",
-  agents:"AI Agents",
-  projects:"Projects",
-  memory:"Memory",
-  developer:"Developer Centre",
-  automations:"Automations",
-  integrations:"Integrations",
-  settings:"Settings"
+const viewTitles = {
+  chat: "Alpha One",
+  memory: "Memory",
+  projects: "Projects",
+  agents: "Agents",
+  overview: "Overview",
+  automations: "Automations",
+  integrations: "Integrations",
+  developer: "Developer",
+  settings: "Settings"
 };
 
-function showPage(pageName) {
+function setSidebarOpen(open) {
+  sidebar.classList.toggle("open", open);
+  backdrop.classList.toggle("show", open);
+}
 
-  pages.forEach(page => page.classList.remove("active"));
-  navButtons.forEach(button => button.classList.remove("active"));
+mobileMenuBtn.addEventListener("click", () => setSidebarOpen(!sidebar.classList.contains("open")));
+backdrop.addEventListener("click", () => setSidebarOpen(false));
 
-  const selectedPage = document.getElementById(pageName);
+function switchView(viewName) {
+  if (!viewTitles[viewName]) return;
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === viewName));
+  document.getElementById("view-chat").classList.toggle("active", viewName === "chat");
+  document.querySelectorAll(".secondary-view").forEach(v => {
+    v.classList.toggle("active", v.id === "view-" + viewName);
+  });
+  topbarTitle.textContent = viewTitles[viewName];
+  setSidebarOpen(false);
 
-  if (!selectedPage) return;
+  if (viewName === "memory" && currentSession) loadMemories();
+  if (viewName === "chat") scrollToBottom();
+}
 
-  selectedPage.classList.add("active");
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => switchView(btn.dataset.view));
+});
 
-  const selectedButton = document.querySelector(
-    '[data-page="' + pageName + '"]'
-  );
-
-  if (selectedButton) selectedButton.classList.add("active");
-
-  pageTitle.textContent = pageNames[pageName] || "Alpha One";
-
-  document.getElementById("sidebar").classList.remove("open");
-
-  window.scrollTo(0,0);
-
-  if (pageName === "assistant" && currentSession) {
-    loadConversationsList(activeConversationId);
-  }
-
-  if (pageName === "memory" && currentSession) {
-    loadMemoriesList();
+function syncMode(newMode) {
+  activeMode = (newMode === "image" || newMode === "video") ? newMode : "chat";
+  composerModeSelect.value = activeMode;
+  document.querySelectorAll(".col-mode-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === activeMode);
+  });
+  if (activeMode === "image") {
+    composerHint.textContent = "Image mode · OpenRouter credits required";
+    sendBtn.textContent = "Generate";
+  } else if (activeMode === "video") {
+    composerHint.textContent = "Video mode · Async job + polling (credits required)";
+    sendBtn.textContent = "Generate";
+  } else {
+    composerHint.textContent = "Chat (openrouter/free) · Enter to send";
+    sendBtn.textContent = "Send";
   }
 }
 
-navButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    showPage(button.dataset.page);
+composerModeSelect.addEventListener("change", () => {
+  if (!isSending) syncMode(composerModeSelect.value);
+});
+
+document.querySelectorAll(".col-mode-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!isSending) syncMode(btn.dataset.mode);
   });
 });
 
-document.getElementById("mobileMenu").addEventListener("click", () => {
-  document.getElementById("sidebar").classList.toggle("open");
-});
-
-
-/* =====================================
-   MESSAGE AND STATUS HELPERS
-===================================== */
-
-function showMessage(elementId,message,type) {
-
-  const element = document.getElementById(elementId);
-
-  element.textContent = message;
-  element.className = "message show " + type;
+function setAlert(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = "alert show " + type;
 }
 
-function hideMessage(elementId) {
-
-  const element = document.getElementById(elementId);
-
-  element.textContent = "";
-  element.className = "message";
+function clearAlert(id) {
+  const el = document.getElementById(id);
+  el.textContent = "";
+  el.className = "alert";
 }
 
-function setBadge(elementId,text,ready) {
-
-  const element = document.getElementById(elementId);
-
-  if (!element) return;
-
-  element.textContent = text;
-  element.className = ready ? "badge ready" : "badge off";
+function setBadge(id, text, state) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = "badge " + (state === "ok" ? "ok" : "off");
 }
 
-function setSystemStatus(text,type) {
-
-  document.getElementById("systemStatus").textContent = text;
-
+function setSystemDot(text, state) {
+  document.getElementById("statusText").textContent = text;
   const dot = document.getElementById("statusDot");
-
-  dot.className = "status-dot";
-
-  if (type === "online") dot.classList.add("online");
-  if (type === "error") dot.classList.add("error");
+  dot.className = "dot" + (state === "online" ? " online" : state === "error" ? " error" : "");
 }
 
+function formatTime(iso) {
+  if (!iso) return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
 
-/* =====================================
-   VOICE INPUT & SPEECH SYNTHESIS
-===================================== */
+function scrollToBottom() {
+  chatStream.scrollTop = chatStream.scrollHeight;
+}
 
-const micButton = document.getElementById("micButton");
-const autoSpeakButton = document.getElementById("autoSpeakButton");
-
-function speakText(text) {
+/* VOICE */
+function speakReply(text) {
   if (!("speechSynthesis" in window) || !text || !text.trim()) return;
   try {
     window.speechSynthesis.cancel();
-    const clean = text.replace(/[#*`]/g, "").slice(0, 1200);
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    window.speechSynthesis.speak(utterance);
-  } catch (err) {
-    console.warn("Speech synthesis error:", err);
-  }
+    const utter = new SpeechSynthesisUtterance(text.replace(/[#*`]/g, "").slice(0, 1200));
+    window.speechSynthesis.speak(utter);
+  } catch (_) {}
 }
 
-autoSpeakButton.addEventListener("click", () => {
-  autoSpeakEnabled = !autoSpeakEnabled;
-  autoSpeakButton.textContent = autoSpeakEnabled ? "Auto-Speak: On" : "Auto-Speak: Off";
-  if (!autoSpeakEnabled && "speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-  }
+autoSpeakToggle.addEventListener("click", () => {
+  autoSpeak = !autoSpeak;
+  autoSpeakLabel.textContent = autoSpeak ? "On" : "Off";
+  if (!autoSpeak && "speechSynthesis" in window) window.speechSynthesis.cancel();
 });
 
-function setupVoiceInput() {
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRec) {
-    micButton.disabled = true;
-    micButton.title = "Voice input not supported in this browser";
+function setupMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    micBtn.disabled = true;
     return;
   }
-
-  speechRecognition = new SpeechRec();
-  speechRecognition.lang = "en-US";
-  speechRecognition.interimResults = false;
-  speechRecognition.maxAlternatives = 1;
-
-  speechRecognition.onstart = () => {
-    isListening = true;
-    micButton.classList.add("listening");
-    micButton.textContent = "Stop";
-    hideMessage("chatError");
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.onstart = () => {
+    listening = true;
+    micBtn.classList.add("listening");
+    micBtn.textContent = "Stop";
+    clearAlert("chatAlert");
   };
-
-  speechRecognition.onresult = (event) => {
-    const transcript = event.results?.[0]?.[0]?.transcript || "";
-    if (transcript) {
-      const current = chatInput.value.trim();
-      chatInput.value = current ? current + " " + transcript : transcript;
-      chatInput.focus();
+  recognition.onresult = (e) => {
+    const t = e.results?.[0]?.[0]?.transcript || "";
+    if (t) {
+      promptInput.value = promptInput.value.trim() ? promptInput.value.trim() + " " + t : t;
+      autoGrowTextarea();
+      promptInput.focus();
     }
   };
-
-  speechRecognition.onerror = (event) => {
-    showMessage("chatError", "Voice input error: " + (event.error || "permission denied"), "error");
+  recognition.onerror = (e) => setAlert("chatAlert", "Mic error: " + (e.error || "unavailable"), "err");
+  recognition.onend = () => {
+    listening = false;
+    micBtn.classList.remove("listening");
+    micBtn.textContent = "Mic";
   };
-
-  speechRecognition.onend = () => {
-    isListening = false;
-    micButton.classList.remove("listening");
-    micButton.textContent = "Mic";
-  };
-
-  micButton.addEventListener("click", () => {
-    if (!speechRecognition) return;
-    if (isListening) {
-      speechRecognition.stop();
-    } else {
-      try {
-        speechRecognition.start();
-      } catch (err) {
-        showMessage("chatError", "Could not start microphone: " + err.message, "error");
-      }
+  micBtn.addEventListener("click", () => {
+    if (!recognition) return;
+    if (listening) recognition.stop();
+    else {
+      try { recognition.start(); } catch (err) { setAlert("chatAlert", err.message, "err"); }
     }
   });
 }
 
-
-/* =====================================
-   SUPABASE INITIALIZATION
-===================================== */
-
-function initializeSupabase() {
-
-  if (!window.supabase || !window.supabase.createClient) {
-
-    setSystemStatus("Supabase library unavailable","error");
-
-    showMessage(
-      "authMessage",
-      "The Supabase library could not load. Check your internet connection and refresh the page.",
-      "error"
-    );
-
+/* AUTH & SESSION */
+function initSupabase() {
+  if (!window.supabase?.createClient) {
+    setSystemDot("SDK error", "error");
     return false;
   }
-
-  try {
-
-    alphaClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-
-    setSystemStatus("Interface online","");
-
-    return true;
-
-  } catch (error) {
-
-    console.error(error);
-
-    setSystemStatus("Configuration error","error");
-
-    return false;
-  }
+  alphaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  return true;
 }
 
-
-/* =====================================
-   AUTHENTICATION DISPLAY
-===================================== */
-
-function updateAccountDisplay(session) {
-
+function applySessionUI(session) {
   currentSession = session;
+  const authShort = document.getElementById("authStateShort");
+  const accountCard = document.getElementById("accountCard");
+  const signOutBtn = document.getElementById("signOutBtn");
 
-  const accountBox = document.getElementById("accountBox");
-  const logoutButton = document.getElementById("logoutButton");
-
-  if (session && session.user) {
-
-    accountBox.textContent =
-      "Signed in as: " + session.user.email;
-
-    logoutButton.style.display = "inline-block";
-
-    setBadge("authBadge","Signed in",true);
-
-    setSystemStatus("Account connected","online");
-
-    document.getElementById("chatConnectionStatus").textContent =
-      "Ready · Voice & persistent threads enabled";
-
+  if (session?.user) {
+    authShort.textContent = "Connected";
+    setSystemDot("Connected", "online");
+    setBadge("ovAuthBadge", "Signed in", "ok");
+    accountCard.textContent = "Signed in as: " + session.user.email;
+    signOutBtn.style.display = "inline-block";
   } else {
-
+    authShort.textContent = "Signed out";
+    setSystemDot("Online", "");
+    setBadge("ovAuthBadge", "Signed out", "off");
+    setBadge("ovDbBadge", "Not tested", "off");
+    setBadge("ovOrBadge", "Not tested", "off");
+    setBadge("intDbBadge", "Not tested", "off");
+    setBadge("intOrBadge", "Not tested", "off");
+    setBadge("devDbBadge", "Not tested", "off");
+    accountCard.textContent = "Not signed in.";
+    signOutBtn.style.display = "none";
     activeConversationId = null;
     conversationsCache = [];
     memoriesCache = [];
-    resetMemoryForm();
-    renderConversationOptions();
-    renderMemoriesList();
-    renderEmptyChatState(
-      "Your intelligence system is ready.<br>Sign in through Settings to save and load conversations."
-    );
-
-    accountBox.textContent = "You are currently signed out.";
-
-    logoutButton.style.display = "none";
-
-    setBadge("authBadge","Not signed in",false);
-
-    setSystemStatus("Interface online","");
-
-    setBadge("aiBadge","Sign in required",false);
-    setBadge("openRouterBadge","Sign in required",false);
-
-    document.getElementById("aiStatValue").textContent = "Not tested";
-
-    document.getElementById("chatConnectionStatus").textContent =
-      "Sign in to use Alpha One Intelligence";
+    renderThreads();
+    renderMemories();
+    showEmptyChat("Sign in under Settings to save and load threads, or test chat.");
   }
 }
 
-
-/* =====================================
-   SIGN IN
-===================================== */
-
-document.getElementById("authForm").addEventListener(
-  "submit",
-  async function(event) {
-
-    event.preventDefault();
-
-    if (!alphaClient) {
-
-      showMessage(
-        "authMessage",
-        "Supabase is unavailable. Refresh the page and try again.",
-        "error"
-      );
-
-      return;
-    }
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    const loginButton = document.getElementById("loginButton");
-
-    loginButton.disabled = true;
-    loginButton.textContent = "Signing in...";
-
-    try {
-
-      const {data,error} =
-        await alphaClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
-      if (error) throw error;
-
-      updateAccountDisplay(data.session);
-
-      showMessage(
-        "authMessage",
-        "You have successfully signed in.",
-        "success"
-      );
-
-      await testDatabaseConnection();
-      await loadConversationsList();
-      await loadMemoriesList();
-
-    } catch (error) {
-
-      showMessage("authMessage",error.message,"error");
-
-    } finally {
-
-      loginButton.disabled = false;
-      loginButton.textContent = "Sign In";
-
-    }
-  }
-);
-
-
-/* =====================================
-   CREATE ACCOUNT
-===================================== */
-
-document.getElementById("registerButton").addEventListener(
-  "click",
-  async function() {
-
-    if (!alphaClient) {
-
-      showMessage(
-        "authMessage",
-        "Supabase is unavailable. Refresh the page and try again.",
-        "error"
-      );
-
-      return;
-    }
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || password.length < 8) {
-
-      showMessage(
-        "authMessage",
-        "Enter a valid email address and a password of at least 8 characters.",
-        "error"
-      );
-
-      return;
-    }
-
-    const registerButton = document.getElementById("registerButton");
-
-    registerButton.disabled = true;
-    registerButton.textContent = "Creating account...";
-
-    try {
-
-      const {data,error} =
-        await alphaClient.auth.signUp({
-          email,
-          password
-        });
-
-      if (error) throw error;
-
-      if (data.session) {
-
-        updateAccountDisplay(data.session);
-
-        showMessage(
-          "authMessage",
-          "Account created and signed in successfully.",
-          "success"
-        );
-
-        await testDatabaseConnection();
-        await loadConversationsList();
-        await loadMemoriesList();
-
-      } else {
-
-        showMessage(
-          "authMessage",
-          "Account registration submitted. Check your email for a verification link if email confirmation is enabled.",
-          "success"
-        );
-      }
-
-    } catch (error) {
-
-      showMessage("authMessage",error.message,"error");
-
-    } finally {
-
-      registerButton.disabled = false;
-      registerButton.textContent = "Create Account";
-
-    }
-  }
-);
-
-
-/* =====================================
-   SIGN OUT
-===================================== */
-
-document.getElementById("logoutButton").addEventListener(
-  "click",
-  async function() {
-
-    if (!alphaClient) return;
-
-    const {error} = await alphaClient.auth.signOut();
-
-    if (error) {
-
-      showMessage("authMessage",error.message,"error");
-
-      return;
-    }
-
-    updateAccountDisplay(null);
-
-    setBadge("databaseBadge","Not tested",false);
-    setBadge("developerDbBadge","Not tested",false);
-    setBadge("integrationDbBadge","Not tested",false);
-
-    showMessage("authMessage","You have signed out.","success");
-
-  }
-);
-
-
-/* =====================================
-   DATABASE CONNECTION TEST
-===================================== */
-
-async function testDatabaseConnection() {
-
-  const button = document.getElementById("testDatabaseButton");
-
-  if (!alphaClient) {
-
-    showMessage(
-      "databaseMessage",
-      "Supabase is not initialized.",
-      "error"
-    );
-
-    return;
-  }
-
-  if (!currentSession) {
-
-    showMessage(
-      "databaseMessage",
-      "Sign in before testing database access.",
-      "info"
-    );
-
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "Testing connection...";
-
+document.getElementById("authForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!alphaClient) return;
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPass").value;
+  const btn = document.getElementById("signInBtn");
+  btn.disabled = true;
+  btn.textContent = "Signing in...";
+  clearAlert("authAlert");
   try {
-
-    const {error} = await alphaClient
-      .schema("alpha")
-      .from("alpha_settings")
-      .select("id")
-      .limit(1);
-
+    const { data, error } = await alphaClient.auth.signInWithPassword({ email, password });
     if (error) throw error;
-
-    setBadge("databaseBadge","Connected",true);
-    setBadge("developerDbBadge","Connected",true);
-    setBadge("integrationDbBadge","Connected",true);
-
-    showMessage(
-      "databaseMessage",
-      "Successful. Alpha One can access the alpha_settings table.",
-      "success"
-    );
-
-  } catch (error) {
-
-    console.error("Database error:",error);
-
-    setBadge("databaseBadge","Connection failed",false);
-    setBadge("developerDbBadge","Connection failed",false);
-    setBadge("integrationDbBadge","Connection failed",false);
-
-    showMessage(
-      "databaseMessage",
-      "Database test failed: " + error.message,
-      "error"
-    );
-
+    applySessionUI(data.session);
+    setAlert("authAlert", "Signed in.", "ok");
+    await Promise.all([testDb(), loadThreads(), loadMemories()]);
+    switchView("chat");
+  } catch (err) {
+    setAlert("authAlert", err.message, "err");
   } finally {
-
-    button.disabled = false;
-    button.textContent = "Test Database Connection";
-
+    btn.disabled = false;
+    btn.textContent = "Sign In";
   }
-}
-
-document.getElementById("testDatabaseButton").addEventListener(
-  "click",
-  testDatabaseConnection
-);
-
-
-/* =====================================
-   LONG-TERM MEMORY CENTRE
-===================================== */
-
-const memoryForm = document.getElementById("memoryForm");
-const memoryCategorySelect = document.getElementById("memoryCategory");
-const memoryContentInput = document.getElementById("memoryContent");
-const saveMemoryButton = document.getElementById("saveMemoryButton");
-const cancelEditMemoryButton = document.getElementById("cancelEditMemoryButton");
-const memorySearchInput = document.getElementById("memorySearchInput");
-const memoryFilterCategory = document.getElementById("memoryFilterCategory");
-const memoryListEl = document.getElementById("memoryList");
-
-function looksLikeSecret(text) {
-  const secretPatterns = [
-    /\bsk-[a-zA-Z0-9_-]{16,}\b/,
-    /\bsb_secret_[a-zA-Z0-9_-]{12,}\b/,
-    /\beyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b/,
-    /\b(password|passwd|secret_key|private_key|api_key)\s*[:=]\s*\S+/i
-  ];
-  return secretPatterns.some(rx => rx.test(text));
-}
-
-function resetMemoryForm() {
-  editingMemoryId = null;
-  memoryCategorySelect.value = "Personal";
-  memoryContentInput.value = "";
-  saveMemoryButton.textContent = "Save Memory";
-  cancelEditMemoryButton.style.display = "none";
-}
-
-cancelEditMemoryButton.addEventListener("click", () => {
-  resetMemoryForm();
-  hideMessage("memoryMessage");
 });
 
-function renderMemoriesList() {
-  if (!currentSession || !currentSession.user) {
-    memoryListEl.innerHTML =
-      '<p class="footer-note">Sign in through Settings to view and manage your saved memories.</p>';
+document.getElementById("signUpBtn").addEventListener("click", async () => {
+  if (!alphaClient) return;
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPass").value;
+  if (!email || password.length < 8) {
+    setAlert("authAlert", "Enter a valid email and 8+ character password.", "err");
     return;
   }
-
-  const query = (memorySearchInput.value || "").trim().toLowerCase();
-  const catFilter = memoryFilterCategory.value || "";
-
-  const filtered = memoriesCache.filter(item => {
-    const matchesCat = !catFilter || (item.category || "") === catFilter;
-    const matchesQuery =
-      !query ||
-      (item.content || "").toLowerCase().includes(query) ||
-      (item.category || "").toLowerCase().includes(query);
-    return matchesCat && matchesQuery;
-  });
-
-  memoryListEl.innerHTML = "";
-
-  if (filtered.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "footer-note";
-    empty.textContent = memoriesCache.length === 0
-      ? "No memories saved yet. Add a memory on the left or tell Alpha One in chat: \"Remember that...\""
-      : "No memories match your current search or category filter.";
-    memoryListEl.appendChild(empty);
-    return;
-  }
-
-  filtered.forEach(item => {
-    const box = document.createElement("div");
-    box.className = "memory-item";
-
-    const top = document.createElement("div");
-    top.className = "memory-item-top";
-
-    const tag = document.createElement("span");
-    tag.className = "project-tag";
-    tag.style.marginTop = "0";
-    tag.textContent = item.category || "general";
-
-    const meta = document.createElement("span");
-    meta.className = "memory-meta";
-    meta.textContent = "Updated " + formatMessageTime(item.updated_at || item.created_at);
-
-    top.appendChild(tag);
-    top.appendChild(meta);
-
-    const body = document.createElement("div");
-    body.className = "memory-content";
-    body.textContent = item.content || "";
-
-    const actions = document.createElement("div");
-    actions.className = "memory-actions";
-
-    const editBtn = document.createElement("button");
-    editBtn.className = "button secondary small";
-    editBtn.type = "button";
-    editBtn.textContent = "Edit";
-    editBtn.addEventListener("click", () => {
-      editingMemoryId = item.id;
-      memoryCategorySelect.value = item.category || "Personal";
-      memoryContentInput.value = item.content || "";
-      saveMemoryButton.textContent = "Update Memory";
-      cancelEditMemoryButton.style.display = "inline-block";
-      hideMessage("memoryMessage");
-      memoryContentInput.focus();
-    });
-
-    const delBtn = document.createElement("button");
-    delBtn.className = "button danger small";
-    delBtn.type = "button";
-    delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => deleteMemoryEntry(item.id));
-
-    actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
-
-    box.appendChild(top);
-    box.appendChild(body);
-    box.appendChild(actions);
-
-    memoryListEl.appendChild(box);
-  });
-}
-
-async function loadMemoriesList() {
-  if (!alphaClient || !currentSession || !currentSession.user) {
-    memoriesCache = [];
-    renderMemoriesList();
-    return;
-  }
-
+  const btn = document.getElementById("signUpBtn");
+  btn.disabled = true;
+  btn.textContent = "Creating...";
+  clearAlert("authAlert");
   try {
-    const { data, error } = await alphaClient
-      .schema("alpha")
-      .from("alpha_memory")
-      .select("id, category, content, created_at, updated_at")
-      .eq("user_id", currentSession.user.id)
-      .order("updated_at", { ascending: false })
-      .limit(100);
-
+    const { data, error } = await alphaClient.auth.signUp({ email, password });
     if (error) throw error;
-
-    memoriesCache = Array.isArray(data) ? data : [];
-    renderMemoriesList();
-  } catch (error) {
-    console.error("Load memories error:", error);
-    showMessage("memoryMessage", "Could not load memories: " + error.message, "error");
-  }
-}
-
-async function deleteMemoryEntry(memoryId) {
-  if (!alphaClient || !currentSession || !currentSession.user || !memoryId) return;
-
-  hideMessage("memoryMessage");
-
-  try {
-    const { error } = await alphaClient
-      .schema("alpha")
-      .from("alpha_memory")
-      .delete()
-      .eq("id", memoryId)
-      .eq("user_id", currentSession.user.id);
-
-    if (error) throw error;
-
-    if (editingMemoryId === memoryId) {
-      resetMemoryForm();
-    }
-
-    await loadMemoriesList();
-    showMessage("memoryMessage", "Memory removed.", "info");
-  } catch (error) {
-    console.error("Delete memory error:", error);
-    showMessage("memoryMessage", "Could not delete memory: " + error.message, "error");
-  }
-}
-
-memoryForm.addEventListener("submit", async function(event) {
-  event.preventDefault();
-
-  if (!alphaClient || !currentSession || !currentSession.user) {
-    showMessage("memoryMessage", "Please sign in through Settings before saving memories.", "error");
-    return;
-  }
-
-  const category = memoryCategorySelect.value || "Personal";
-  const content = (memoryContentInput.value || "").trim();
-
-  if (!content) {
-    showMessage("memoryMessage", "Please enter a memory note.", "error");
-    return;
-  }
-
-  if (looksLikeSecret(content)) {
-    showMessage(
-      "memoryMessage",
-      "Blocked: Do not save passwords, API keys, tokens, or private credentials in memory.",
-      "error"
-    );
-    return;
-  }
-
-  saveMemoryButton.disabled = true;
-  hideMessage("memoryMessage");
-
-  try {
-    if (editingMemoryId) {
-      const { error } = await alphaClient
-        .schema("alpha")
-        .from("alpha_memory")
-        .update({
-          category,
-          content,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", editingMemoryId)
-        .eq("user_id", currentSession.user.id);
-
-      if (error) throw error;
-      resetMemoryForm();
-      await loadMemoriesList();
-      showMessage("memoryMessage", "Memory updated.", "success");
+    if (data.session) {
+      applySessionUI(data.session);
+      setAlert("authAlert", "Account created and signed in.", "ok");
+      await Promise.all([testDb(), loadThreads(), loadMemories()]);
+      switchView("chat");
     } else {
-      const { error } = await alphaClient
-        .schema("alpha")
-        .from("alpha_memory")
-        .insert({
-          user_id: currentSession.user.id,
-          category,
-          content,
-          metadata: { source: "memory_centre" }
-        });
-
-      if (error) throw error;
-      resetMemoryForm();
-      await loadMemoriesList();
-      showMessage("memoryMessage", "Memory saved to alpha_memory.", "success");
+      setAlert("authAlert", "Check your email to confirm your account.", "ok");
     }
-  } catch (error) {
-    console.error("Save memory error:", error);
-    showMessage("memoryMessage", "Failed to save memory: " + error.message, "error");
+  } catch (err) {
+    setAlert("authAlert", err.message, "err");
   } finally {
-    saveMemoryButton.disabled = false;
+    btn.disabled = false;
+    btn.textContent = "Create Account";
   }
 });
 
-memorySearchInput.addEventListener("input", renderMemoriesList);
-memoryFilterCategory.addEventListener("change", renderMemoriesList);
+document.getElementById("signOutBtn").addEventListener("click", async () => {
+  if (!alphaClient) return;
+  await alphaClient.auth.signOut();
+  applySessionUI(null);
+  setAlert("authAlert", "Signed out.", "info");
+});
 
-
-/* =====================================
-   PERSISTENT CONVERSATIONS & HISTORY
-===================================== */
-
-const conversationSelect = document.getElementById("conversationSelect");
-const newChatButton = document.getElementById("newChatButton");
-const deleteChatButton = document.getElementById("deleteChatButton");
-
-function renderConversationOptions() {
-
-  conversationSelect.innerHTML = "";
-
-  const draftOption = document.createElement("option");
-  draftOption.value = "";
-  draftOption.textContent = currentSession
-    ? "New conversation (saved on first message)"
-    : "Sign in to load threads";
-  conversationSelect.appendChild(draftOption);
-
-  conversationsCache.forEach(conv => {
-    const opt = document.createElement("option");
-    opt.value = conv.id;
-    opt.textContent = conv.title || "New conversation";
-    conversationSelect.appendChild(opt);
-  });
-
-  conversationSelect.value = activeConversationId || "";
-  deleteChatButton.disabled = !activeConversationId || !currentSession || isSending;
+async function testDb() {
+  if (!alphaClient || !currentSession) {
+    setAlert("dbAlert", "Sign in first.", "info");
+    return;
+  }
+  const btn = document.getElementById("testDbBtn");
+  btn.disabled = true;
+  clearAlert("dbAlert");
+  try {
+    const { error } = await alphaClient.schema("alpha").from("alpha_settings").select("id").limit(1);
+    if (error) throw error;
+    setBadge("ovDbBadge", "Connected", "ok");
+    setBadge("intDbBadge", "Connected", "ok");
+    setBadge("devDbBadge", "Connected", "ok");
+    setAlert("dbAlert", "Connected to alpha.alpha_settings.", "ok");
+  } catch (err) {
+    setBadge("ovDbBadge", "Error", "off");
+    setBadge("intDbBadge", "Error", "off");
+    setBadge("devDbBadge", "Error", "off");
+    setAlert("dbAlert", "DB check failed: " + err.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
 }
 
-function renderEmptyChatState(subtext) {
+document.getElementById("testDbBtn").addEventListener("click", testDb);
 
-  chatBox.innerHTML = `
-    <div class="chat-placeholder" id="chatPlaceholder">
-      <strong>ALPHA ONE</strong><br><br>
-      ${subtext}
+/* THREADS & CHAT */
+function showEmptyChat(msg) {
+  chatInner.innerHTML = `
+    <div class="empty-state" id="emptyState">
+      <h1>Alpha One</h1>
+      <p id="emptySubtext">${msg}</p>
     </div>
   `;
 }
 
-function formatMessageTime(isoString) {
-
-  if (!isoString) {
-    return new Date().toLocaleTimeString([],{
-      hour:"2-digit",
-      minute:"2-digit"
-    });
-  }
-
-  const parsed = new Date(isoString);
-  if (Number.isNaN(parsed.getTime())) {
-    return new Date().toLocaleTimeString([],{
-      hour:"2-digit",
-      minute:"2-digit"
-    });
-  }
-
-  return parsed.toLocaleTimeString([],{
-    hour:"2-digit",
-    minute:"2-digit"
-  });
+function clearEmptyState() {
+  const el = document.getElementById("emptyState");
+  if (el) el.remove();
 }
 
-async function loadConversationsList(preferredId = null) {
+function appendMessage(role, content, timeStr = null, canSpeak = true, media = null) {
+  clearEmptyState();
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
 
-  if (!alphaClient || !currentSession || !currentSession.user) {
-    conversationsCache = [];
-    activeConversationId = null;
-    renderConversationOptions();
+  const meta = document.createElement("div");
+  meta.className = "msg-meta";
+  const who = document.createElement("span");
+  who.textContent = (role === "user" ? "You" : "Alpha One") + " · " + (timeStr || formatTime());
+  meta.appendChild(who);
+
+  if (role === "assistant" && canSpeak && ("speechSynthesis" in window)) {
+    const spk = document.createElement("button");
+    spk.type = "button";
+    spk.className = "link-btn";
+    spk.textContent = "Speak";
+    spk.addEventListener("click", () => speakReply(content));
+    meta.appendChild(spk);
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = "msg-bubble";
+  bubble.textContent = content;
+
+  if (media?.type === "image" && media?.url) {
+    const img = document.createElement("img");
+    img.className = "msg-img";
+    img.src = media.url;
+    img.alt = "Generated image";
+    bubble.appendChild(img);
+  }
+
+  if (media?.type === "video" && media?.url) {
+    const vid = document.createElement("video");
+    vid.className = "msg-video";
+    vid.src = media.url;
+    vid.controls = true;
+    vid.playsInline = true;
+    bubble.appendChild(vid);
+  }
+
+  row.appendChild(meta);
+  row.appendChild(bubble);
+  chatInner.appendChild(row);
+  scrollToBottom();
+}
+
+function setTyping(label = "Thinking...") {
+  removeTyping();
+  const t = document.createElement("div");
+  t.className = "typing-bubble";
+  t.id = "typingRow";
+  t.textContent = label;
+  chatInner.appendChild(t);
+  scrollToBottom();
+}
+
+function updateTyping(label) {
+  const t = document.getElementById("typingRow");
+  if (t) {
+    t.textContent = label;
+    scrollToBottom();
+  }
+}
+
+function removeTyping() {
+  const t = document.getElementById("typingRow");
+  if (t) t.remove();
+}
+
+function renderThreads() {
+  threadListEl.innerHTML = "";
+  if (!currentSession?.user) {
+    const div = document.createElement("div");
+    div.className = "nav-btn";
+    div.style.cursor = "default";
+    div.textContent = "Sign in to load threads";
+    threadListEl.appendChild(div);
     return;
   }
 
-  try {
+  if (conversationsCache.length === 0) {
+    const div = document.createElement("div");
+    div.className = "nav-btn";
+    div.style.cursor = "default";
+    div.textContent = "No saved threads yet";
+    threadListEl.appendChild(div);
+    return;
+  }
 
-    const {data,error} = await alphaClient
+  conversationsCache.forEach(conv => {
+    const item = document.createElement("div");
+    item.className = "thread-item" + (conv.id === activeConversationId ? " active" : "");
+
+    const sel = document.createElement("button");
+    sel.type = "button";
+    sel.className = "thread-select-btn";
+    sel.textContent = conv.title || "Untitled thread";
+    sel.addEventListener("click", async () => {
+      if (isSending) return;
+      activeConversationId = conv.id;
+      renderThreads();
+      switchView("chat");
+      await loadMessagesForThread(conv.id);
+    });
+
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "thread-del-btn";
+    del.title = "Delete thread";
+    del.textContent = "✕";
+    del.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (isSending) return;
+      await deleteThread(conv.id);
+    });
+
+    item.appendChild(sel);
+    item.appendChild(del);
+    threadListEl.appendChild(item);
+  });
+}
+
+async function loadThreads(preferredId = null) {
+  if (!alphaClient || !currentSession?.user) return;
+  try {
+    const { data, error } = await alphaClient
       .schema("alpha")
       .from("alpha_conversations")
       .select("id, title, updated_at, created_at")
@@ -2124,580 +1570,410 @@ async function loadConversationsList(preferredId = null) {
       .limit(50);
 
     if (error) throw error;
-
     conversationsCache = Array.isArray(data) ? data : [];
 
-    const targetId =
-      preferredId ||
-      activeConversationId ||
-      (conversationsCache[0] ? conversationsCache[0].id : null);
-
-    const exists = conversationsCache.some(c => c.id === targetId);
-    activeConversationId = exists ? targetId : null;
-
-    renderConversationOptions();
+    const target = preferredId || activeConversationId || (conversationsCache[0]?.id ?? null);
+    activeConversationId = conversationsCache.some(c => c.id === target) ? target : null;
+    renderThreads();
 
     if (activeConversationId) {
-      await loadConversationMessages(activeConversationId);
+      await loadMessagesForThread(activeConversationId);
     } else {
-      renderEmptyChatState(
-        "Start a new thread below. Your messages and replies will be saved automatically."
-      );
+      showEmptyChat("Start a new thread below. Chat uses openrouter/free ($0); switch mode for Image or Video.");
     }
-
-  } catch (error) {
-
-    console.error("Load conversations error:",error);
-    showMessage(
-      "chatError",
-      "Could not load saved conversations: " + error.message,
-      "error"
-    );
+  } catch (err) {
+    setAlert("chatAlert", "Failed to load threads: " + err.message, "err");
   }
 }
 
-async function loadConversationMessages(conversationId) {
-
-  if (!alphaClient || !currentSession || !conversationId) return;
-
-  hideMessage("chatError");
-  renderEmptyChatState("Loading conversation history...");
-
+async function loadMessagesForThread(convId) {
+  if (!alphaClient || !currentSession || !convId) return;
+  clearAlert("chatAlert");
+  showEmptyChat("Loading conversation...");
   try {
-
-    const {data,error} = await alphaClient
+    const { data, error } = await alphaClient
       .schema("alpha")
       .from("alpha_messages")
       .select("role, content, model, created_at")
-      .eq("conversation_id", conversationId)
+      .eq("conversation_id", convId)
       .order("created_at", { ascending: true });
 
     if (error) throw error;
-
     const rows = Array.isArray(data) ? data : [];
-
     if (rows.length === 0) {
-      renderEmptyChatState("No messages in this thread yet. Send a message to begin.");
+      showEmptyChat("Empty thread. Send a message to begin.");
       return;
     }
 
-    chatBox.innerHTML = "";
-
+    chatInner.innerHTML = "";
     let lastModel = null;
-
-    rows.forEach(msg => {
-      if (msg.role === "user" || msg.role === "assistant") {
-        addChatMessage(
-          msg.role,
-          msg.content || "",
-          formatMessageTime(msg.created_at),
-          false
+    rows.forEach(m => {
+      if (m.role === "user" || m.role === "assistant") {
+        const vidMatch = (m.content || "").match(/\[Video generated\]\s*(https?:\/\/\S+)/i);
+        appendMessage(
+          m.role,
+          m.content || "",
+          formatTime(m.created_at),
+          false,
+          vidMatch ? { type: "video", url: vidMatch[1] } : null
         );
-        if (msg.role === "assistant" && msg.model) {
-          lastModel = msg.model;
-        }
+        if (m.role === "assistant" && m.model) lastModel = m.model;
       }
     });
-
-    if (lastModel) {
-      document.getElementById("chatModel").textContent =
-        "AI model: " + lastModel;
-    }
-
-  } catch (error) {
-
-    console.error("Load messages error:",error);
-    renderEmptyChatState("Could not load messages for this conversation.");
-    showMessage(
-      "chatError",
-      "History load failed: " + error.message,
-      "error"
-    );
+    if (lastModel) modelChip.textContent = lastModel;
+    scrollToBottom();
+  } catch (err) {
+    showEmptyChat("Could not load messages.");
+    setAlert("chatAlert", err.message, "err");
   }
 }
 
-conversationSelect.addEventListener("change", async function() {
-
-  if (isSending) return;
-
-  const selectedId = conversationSelect.value || null;
-  activeConversationId = selectedId;
-  renderConversationOptions();
-
-  if (activeConversationId) {
-    await loadConversationMessages(activeConversationId);
-  } else {
-    document.getElementById("chatModel").textContent =
-      "AI model: Not yet tested";
-    renderEmptyChatState(
-      "New conversation started. Send a message to save it."
-    );
-  }
-});
-
-newChatButton.addEventListener("click", function() {
-
-  if (isSending) return;
-
-  activeConversationId = null;
-  renderConversationOptions();
-  hideMessage("chatError");
-
-  document.getElementById("chatModel").textContent =
-    "AI model: Not yet tested";
-
-  renderEmptyChatState(
-    currentSession
-      ? "New conversation started. Send a message to save it."
-      : "Sign in through Settings to start a persistent conversation."
-  );
-
-  chatInput.focus();
-});
-
-deleteChatButton.addEventListener("click", async function() {
-
-  if (isSending || !activeConversationId || !currentSession || !alphaClient) {
-    return;
-  }
-
-  const targetId = activeConversationId;
-  deleteChatButton.disabled = true;
-  hideMessage("chatError");
-
+async function deleteThread(convId) {
+  if (!alphaClient || !currentSession?.user || !convId) return;
+  clearAlert("chatAlert");
   try {
-
-    const {error} = await alphaClient
+    const { error } = await alphaClient
       .schema("alpha")
       .from("alpha_conversations")
       .delete()
-      .eq("id", targetId)
+      .eq("id", convId)
       .eq("user_id", currentSession.user.id);
-
     if (error) throw error;
-
-    activeConversationId = null;
-    await loadConversationsList(null);
-
-    showMessage(
-      "chatError",
-      "Conversation deleted.",
-      "info"
-    );
-
-  } catch (error) {
-
-    console.error("Delete conversation error:",error);
-    showMessage(
-      "chatError",
-      "Could not delete conversation: " + error.message,
-      "error"
-    );
-
-  } finally {
-
-    renderConversationOptions();
+    if (activeConversationId === convId) activeConversationId = null;
+    await loadThreads(null);
+  } catch (err) {
+    setAlert("chatAlert", "Delete failed: " + err.message, "err");
   }
+}
+
+newChatBtn.addEventListener("click", () => {
+  if (isSending) return;
+  activeConversationId = null;
+  renderThreads();
+  clearAlert("chatAlert");
+  switchView("chat");
+  showEmptyChat("New thread started. Type a prompt below.");
+  promptInput.focus();
 });
 
-
-/* =====================================
-   AI CHAT DISPLAY
-===================================== */
-
-const chatBox = document.getElementById("chatBox");
-const chatInput = document.getElementById("chatInput");
-const sendButton = document.getElementById("sendButton");
-
-function removeChatPlaceholder() {
-
-  const placeholder = document.getElementById("chatPlaceholder");
-
-  if (placeholder) placeholder.remove();
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
 }
 
-function addChatMessage(role,message,timeLabel = null,allowSpeak = true) {
-
-  removeChatPlaceholder();
-
-  const wrapper = document.createElement("div");
-
-  wrapper.className = "chat-message " + role;
-
-  const label = document.createElement("div");
-
-  label.className = "chat-role";
-  label.textContent = role === "user" ? "YOU" : "ALPHA ONE";
-
-  const bubble = document.createElement("div");
-
-  bubble.className = "chat-bubble";
-
-  // Use textContent to prevent HTML/script injection.
-  bubble.textContent = message;
-
-  const actions = document.createElement("div");
-  actions.className = "chat-msg-actions";
-
-  const time = document.createElement("div");
-
-  time.className = "chat-time";
-
-  time.textContent = timeLabel || new Date().toLocaleTimeString([],{
-    hour:"2-digit",
-    minute:"2-digit"
-  });
-
-  actions.appendChild(time);
-
-  if (role === "assistant" && allowSpeak && ("speechSynthesis" in window)) {
-    const speakBtn = document.createElement("button");
-    speakBtn.type = "button";
-    speakBtn.className = "link-btn";
-    speakBtn.textContent = "Speak";
-    speakBtn.addEventListener("click", () => speakText(message));
-    actions.appendChild(speakBtn);
+async function pollVideo(jobId, convId) {
+  for (let i = 1; i <= 20; i++) {
+    updateTyping(`Rendering video (${jobId}) · poll ${i}/20...`);
+    await sleep(12000);
+    const { data, error } = await alphaClient.functions.invoke(AI_FUNCTION_NAME, {
+      body: { action: "video_status", jobId, conversationId: convId }
+    });
+    if (error) throw new Error(error.message || "Video poll error");
+    if (data?.status === "completed" && data?.videoUrl) return { status: "completed", url: data.videoUrl };
+    if (data?.status === "failed") return { status: "failed", msg: data?.errorMessage || "Video generation failed." };
   }
-
-  wrapper.appendChild(label);
-  wrapper.appendChild(bubble);
-  wrapper.appendChild(actions);
-
-  chatBox.appendChild(wrapper);
-
-  chatBox.scrollTop = chatBox.scrollHeight;
-
-  return wrapper;
+  return { status: "timeout", msg: `Video job ${jobId} is still rendering. Try again shortly.` };
 }
 
-function addTypingIndicator() {
-
-  removeChatPlaceholder();
-
-  const indicator = document.createElement("div");
-
-  indicator.className = "typing";
-  indicator.id = "typingIndicator";
-  indicator.textContent = "Alpha One is thinking...";
-
-  chatBox.appendChild(indicator);
-
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function removeTypingIndicator() {
-
-  const indicator = document.getElementById("typingIndicator");
-
-  if (indicator) indicator.remove();
-}
-
-
-/* =====================================
-   AI CHAT CONNECTION
-===================================== */
-
-async function sendChatMessage() {
-
+async function sendPrompt() {
   if (isSending) return;
+  if (listening && recognition) recognition.stop();
 
-  if (isListening && speechRecognition) {
-    speechRecognition.stop();
-  }
-
-  const message = chatInput.value.trim();
-
-  if (!message) return;
-
-  hideMessage("chatError");
+  const text = promptInput.value.trim();
+  if (!text) return;
+  clearAlert("chatAlert");
 
   if (!navigator.onLine) {
-    showMessage(
-      "chatError",
-      "You are currently offline. Reconnect to the internet to send messages to Alpha One.",
-      "error"
-    );
+    setAlert("chatAlert", "You are offline. Connect to the internet to message Alpha One.", "err");
     return;
   }
 
   if (!alphaClient) {
-
-    showMessage(
-      "chatError",
-      "Supabase is unavailable. Refresh the page.",
-      "error"
-    );
-
+    setAlert("chatAlert", "Supabase client not ready.", "err");
     return;
   }
 
-  let sessionData;
-
-  try {
-
-    const result = await alphaClient.auth.getSession();
-
-    if (result.error) throw result.error;
-
-    sessionData = result.data.session;
-
-  } catch (error) {
-
-    showMessage(
-      "chatError",
-      "Could not verify your account: " + error.message,
-      "error"
-    );
-
-    return;
-  }
-
-  if (!sessionData) {
-
-    showMessage(
-      "chatError",
-      "Please sign in through Settings before messaging Alpha One.",
-      "error"
-    );
-
+  const { data: sessData, error: sessErr } = await alphaClient.auth.getSession();
+  if (sessErr || !sessData?.session) {
+    setAlert("chatAlert", "Sign in under Settings before sending messages.", "err");
     return;
   }
 
   isSending = true;
-  renderConversationOptions();
+  const modeAtSend = activeMode;
+  promptInput.value = "";
+  autoGrowTextarea();
+  promptInput.disabled = true;
+  sendBtn.disabled = true;
+  sendBtn.textContent = "...";
 
-  const originalMessage = message;
-
-  chatInput.value = "";
-  chatInput.disabled = true;
-  sendButton.disabled = true;
-  sendButton.textContent = "Thinking...";
-
-  addChatMessage("user",originalMessage,null,false);
-  addTypingIndicator();
-
-  document.getElementById("chatConnectionStatus").textContent =
-    "Connecting to Alpha One intelligence...";
+  appendMessage("user", text, null, false, null);
+  setTyping(
+    modeAtSend === "image" ? "Generating image..." :
+    modeAtSend === "video" ? "Submitting video job..." :
+    "Alpha One is thinking..."
+  );
 
   try {
+    const payload = { message: text, mode: modeAtSend };
+    if (activeConversationId) payload.conversationId = activeConversationId;
 
-    const payload = {
-      message: originalMessage
-    };
-
-    if (activeConversationId) {
-      payload.conversationId = activeConversationId;
-    }
-
-    const {data,error} = await alphaClient.functions.invoke(
-      AI_FUNCTION_NAME,
-      {
-        body: payload
-      }
-    );
-
-    removeTypingIndicator();
+    const { data, error } = await alphaClient.functions.invoke(AI_FUNCTION_NAME, { body: payload });
 
     if (error) {
-
-      console.error("Alpha One function error:",error);
-
-      let details = error.message || "The AI request failed.";
-
+      let detail = error.message || "Request failed";
       if (error.context && typeof error.context.clone === "function") {
-
         try {
-
-          const responseCopy = error.context.clone();
-          const responseText = await responseCopy.text();
-
-          if (responseText) {
-
-            try {
-
-              const responseJson = JSON.parse(responseText);
-
-              if (responseJson.error) {
-                details = responseJson.error;
-              }
-
-            } catch (_) {
-
-              details = responseText;
-
-            }
+          const raw = await error.context.clone().text();
+          if (raw) {
+            try { detail = JSON.parse(raw).error || raw; } catch (_) { detail = raw; }
           }
-
-        } catch (_) {
-          // Keep the original error message.
-        }
+        } catch (_) {}
       }
-
-      throw new Error(details);
+      throw new Error(detail);
     }
 
-    if (!data || !data.success || !data.reply) {
-
-      throw new Error(
-        data && data.error
-          ? data.error
-          : "Alpha One returned an unexpected response."
-      );
+    if (!data?.success || !data?.reply) {
+      throw new Error(data?.error || "Empty response from Alpha One");
     }
 
-    addChatMessage("assistant",data.reply,null,true);
+    if (data.conversationId) activeConversationId = data.conversationId;
 
-    if (autoSpeakEnabled) {
-      speakText(data.reply);
+    if (modeAtSend === "image" && data.imageUrl) {
+      removeTyping();
+      appendMessage("assistant", data.reply, null, false, { type: "image", url: data.imageUrl });
+    } else if (modeAtSend === "video" && data.jobId) {
+      const outcome = await pollVideo(data.jobId, activeConversationId);
+      removeTyping();
+      if (outcome.status === "completed" && outcome.url) {
+        appendMessage("assistant", "Video generated:", null, false, { type: "video", url: outcome.url });
+      } else {
+        appendMessage("assistant", outcome.msg || `Job ${data.jobId}: ${outcome.status}`, null, false, null);
+      }
+    } else {
+      removeTyping();
+      appendMessage("assistant", data.reply, null, true, null);
+      if (autoSpeak) speakReply(data.reply);
     }
 
-    if (data.conversationId) {
-      activeConversationId = data.conversationId;
+    if (data.model) {
+      modelChip.textContent = data.model;
+      document.getElementById("ovAiStat").textContent = "Online";
     }
+    setBadge("ovOrBadge", "Connected", "ok");
+    setBadge("intOrBadge", "Connected", "ok");
+    setSystemDot("Connected", "online");
 
-    await loadConversationsList(activeConversationId);
-
-    if (data.memorySaved) {
-      await loadMemoriesList();
-    }
-
-    const modelName = data.model || "OpenRouter model";
-
-    document.getElementById("chatModel").textContent =
-      "AI model: " + modelName;
-
-    document.getElementById("chatConnectionStatus").textContent =
-      data.memorySaved
-        ? "AI connection active · Saved & memory updated"
-        : "AI connection active · Saved";
-
-    setBadge("aiBadge","Connected",true);
-    setBadge("openRouterBadge","Connected",true);
-
-    document.getElementById("aiStatValue").textContent = "Online";
-
-    setSystemStatus("Alpha One AI online","online");
-
-  } catch (error) {
-
-    console.error("Alpha One chat error:",error);
-
-    removeTypingIndicator();
-
-    addChatMessage(
-      "assistant",
-      "I couldn't complete that request. " + error.message,
-      null,
-      false
-    );
-
-    document.getElementById("chatConnectionStatus").textContent =
-      "AI request failed — check the connection";
-
-    setBadge("aiBadge","Connection failed",false);
-    setBadge("openRouterBadge","Connection failed",false);
-
-    document.getElementById("aiStatValue").textContent = "Error";
-
-    setSystemStatus("AI connection error","error");
-
+    await loadThreads(activeConversationId);
+    if (data.memorySaved) await loadMemories();
+  } catch (err) {
+    removeTyping();
+    appendMessage("assistant", "Could not complete request: " + err.message, null, false, null);
+    setBadge("ovOrBadge", "Error", "off");
+    setBadge("intOrBadge", "Error", "off");
+    setSystemDot("Error", "error");
   } finally {
-
     isSending = false;
-
-    chatInput.disabled = false;
-    sendButton.disabled = false;
-    sendButton.textContent = "Send Message";
-    renderConversationOptions();
-
-    chatInput.focus();
-
+    promptInput.disabled = false;
+    sendBtn.disabled = false;
+    syncMode(activeMode);
+    promptInput.focus();
   }
 }
 
+function autoGrowTextarea() {
+  promptInput.style.height = "auto";
+  promptInput.style.height = Math.min(promptInput.scrollHeight, 170) + "px";
+}
 
-/* =====================================
-   CHAT BUTTON AND KEYBOARD
-===================================== */
-
-sendButton.addEventListener("click",sendChatMessage);
-
-chatInput.addEventListener("keydown",function(event) {
-
-  if (event.key === "Enter" && !event.shiftKey) {
-
-    event.preventDefault();
-
-    sendChatMessage();
+promptInput.addEventListener("input", autoGrowTextarea);
+sendBtn.addEventListener("click", sendPrompt);
+promptInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendPrompt();
   }
 });
 
+/* MEMORY */
+function hasSecret(s) {
+  return [
+    /\bsk-[a-zA-Z0-9_-]{16,}\b/,
+    /\bsb_secret_[a-zA-Z0-9_-]{12,}\b/,
+    /\beyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b/,
+    /\b(password|passwd|secret_key|private_key|api_key)\s*[:=]\s*\S+/i
+  ].some(r => r.test(s));
+}
 
-/* =====================================
-   STARTUP
-===================================== */
+function resetMemForm() {
+  editingMemoryId = null;
+  document.getElementById("memCategory").value = "Personal";
+  document.getElementById("memContent").value = "";
+  document.getElementById("saveMemBtn").textContent = "Save Memory";
+  document.getElementById("cancelMemBtn").style.display = "none";
+}
 
-async function startAlphaOne() {
+document.getElementById("cancelMemBtn").addEventListener("click", () => {
+  resetMemForm();
+  clearAlert("memAlert");
+});
 
-  setupVoiceInput();
+function renderMemories() {
+  const list = document.getElementById("memList");
+  list.innerHTML = "";
+  if (!currentSession?.user) {
+    list.innerHTML = '<p style="font-size:12px;color:var(--muted)">Sign in under Settings to manage memories.</p>';
+    return;
+  }
+  const q = (document.getElementById("memSearch").value || "").trim().toLowerCase();
+  const cat = document.getElementById("memFilter").value || "";
+  const items = memoriesCache.filter(m =>
+    (!cat || (m.category || "") === cat) &&
+    (!q || (m.content || "").toLowerCase().includes(q) || (m.category || "").toLowerCase().includes(q))
+  );
+  if (items.length === 0) {
+    list.innerHTML = '<p style="font-size:12px;color:var(--muted)">No matching memories.</p>';
+    return;
+  }
+  items.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "mem-card";
+    const top = document.createElement("div");
+    top.className = "mem-top";
+    const badge = document.createElement("span");
+    badge.className = "mem-cat";
+    badge.textContent = m.category || "general";
+    const tm = document.createElement("span");
+    tm.className = "msg-meta";
+    tm.textContent = formatTime(m.updated_at || m.created_at);
+    top.appendChild(badge);
+    top.appendChild(tm);
 
-  window.addEventListener("offline", () => {
-    setSystemStatus("Offline — local view only","error");
-  });
+    const body = document.createElement("div");
+    body.className = "mem-body";
+    body.textContent = m.content || "";
 
-  window.addEventListener("online", () => {
-    setSystemStatus(currentSession ? "Account connected" : "Interface online","online");
-  });
-
-  const initialized = initializeSupabase();
-
-  if (!initialized) return;
-
-  renderConversationOptions();
-  renderMemoriesList();
-
-  try {
-
-    const {data,error} = await alphaClient.auth.getSession();
-
-    if (error) throw error;
-
-    updateAccountDisplay(data.session);
-
-    if (data.session) {
-      await testDatabaseConnection();
-      await loadConversationsList();
-      await loadMemoriesList();
-    }
-
-    alphaClient.auth.onAuthStateChange(
-      async (event,session) => {
-
-        updateAccountDisplay(session);
-
-        if (session) {
-          await loadConversationsList();
-          await loadMemoriesList();
-        }
+    const acts = document.createElement("div");
+    acts.className = "mem-actions";
+    const ed = document.createElement("button");
+    ed.type = "button";
+    ed.className = "btn ghost sm";
+    ed.textContent = "Edit";
+    ed.addEventListener("click", () => {
+      editingMemoryId = m.id;
+      document.getElementById("memCategory").value = m.category || "Personal";
+      document.getElementById("memContent").value = m.content || "";
+      document.getElementById("saveMemBtn").textContent = "Update Memory";
+      document.getElementById("cancelMemBtn").style.display = "inline-block";
+    });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "btn danger sm";
+    del.textContent = "Delete";
+    del.addEventListener("click", async () => {
+      try {
+        const { error } = await alphaClient.schema("alpha").from("alpha_memory").delete().eq("id", m.id).eq("user_id", currentSession.user.id);
+        if (error) throw error;
+        if (editingMemoryId === m.id) resetMemForm();
+        await loadMemories();
+      } catch (err) {
+        setAlert("memAlert", err.message, "err");
       }
-    );
+    });
+    acts.appendChild(ed);
+    acts.appendChild(del);
 
-  } catch (error) {
+    card.appendChild(top);
+    card.appendChild(body);
+    card.appendChild(acts);
+    list.appendChild(card);
+  });
+}
 
-    console.error("Startup error:",error);
-
-    showMessage(
-      "authMessage",
-      "Could not retrieve account session: " + error.message,
-      "error"
-    );
-
+async function loadMemories() {
+  if (!alphaClient || !currentSession?.user) return;
+  try {
+    const { data, error } = await alphaClient
+      .schema("alpha")
+      .from("alpha_memory")
+      .select("id, category, content, created_at, updated_at")
+      .eq("user_id", currentSession.user.id)
+      .order("updated_at", { ascending: false })
+      .limit(100);
+    if (error) throw error;
+    memoriesCache = Array.isArray(data) ? data : [];
+    renderMemories();
+  } catch (err) {
+    setAlert("memAlert", "Load error: " + err.message, "err");
   }
 }
 
-startAlphaOne();
+document.getElementById("memoryForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!alphaClient || !currentSession?.user) {
+    setAlert("memAlert", "Sign in first.", "err");
+    return;
+  }
+  const category = document.getElementById("memCategory").value;
+  const content = document.getElementById("memContent").value.trim();
+  if (!content) return;
+  if (hasSecret(content)) {
+    setAlert("memAlert", "Blocked: do not save secrets or API keys.", "err");
+    return;
+  }
+  const btn = document.getElementById("saveMemBtn");
+  btn.disabled = true;
+  clearAlert("memAlert");
+  try {
+    if (editingMemoryId) {
+      const { error } = await alphaClient.schema("alpha").from("alpha_memory")
+        .update({ category, content, updated_at: new Date().toISOString() })
+        .eq("id", editingMemoryId).eq("user_id", currentSession.user.id);
+      if (error) throw error;
+      setAlert("memAlert", "Memory updated.", "ok");
+    } else {
+      const { error } = await alphaClient.schema("alpha").from("alpha_memory")
+        .insert({ user_id: currentSession.user.id, category, content, metadata: { source: "ui" } });
+      if (error) throw error;
+      setAlert("memAlert", "Memory saved.", "ok");
+    }
+    resetMemForm();
+    await loadMemories();
+  } catch (err) {
+    setAlert("memAlert", err.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
+});
 
+document.getElementById("memSearch").addEventListener("input", renderMemories);
+document.getElementById("memFilter").addEventListener("change", renderMemories);
+
+/* BOOT */
+async function boot() {
+  setupMic();
+  syncMode("chat");
+  window.addEventListener("offline", () => setSystemDot("Offline", "error"));
+  window.addEventListener("online", () => setSystemDot(currentSession ? "Connected" : "Online", "online"));
+
+  if (!initSupabase()) return;
+
+  try {
+    const { data, error } = await alphaClient.auth.getSession();
+    if (error) throw error;
+    applySessionUI(data.session);
+    if (data.session) {
+      await Promise.all([testDb(), loadThreads(), loadMemories()]);
+    }
+    alphaClient.auth.onAuthStateChange(async (_evt, session) => {
+      applySessionUI(session);
+      if (session) await Promise.all([testDb(), loadThreads(), loadMemories()]);
+    });
+  } catch (err) {
+    setSystemDot("Auth error", "error");
+  }
+}
+
+boot();
 </script>
-
 </body>
 </html>
